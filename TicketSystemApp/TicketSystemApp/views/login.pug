@@ -1,0 +1,7 @@
+extends layout
+
+block content
+    form(method="POST" action="/login")
+        input#loginId(type="text" placeholder="Username/Email" name="loginId")
+        input#password(type="password" placeholder="Password" name="password")
+        button(class="btn" type="submit") Login

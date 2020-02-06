@@ -1,0 +1,2 @@
+C:\Users\admin\Documents\Campus Mölndal\Databases\TicketSystem\TicketSystemApp\TicketSystemApp\obj\Debug\TicketSystemApp.njsprojAssemblyReference.cache
+C:\Users\admin\Documents\Campus Mölndal\Databases\TicketSystem\TicketSystemApp\TicketSystemApp\bin\Microsoft.NodejsTools.WebRole.dll
