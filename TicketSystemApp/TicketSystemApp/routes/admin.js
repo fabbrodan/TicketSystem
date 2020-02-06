@@ -18,9 +18,9 @@ router.post('/login', function (req, res) {
         (error, response, body) => {
             if (!error && response.statusCode == 200) {
                 if (body) {
-                    req.app.locals.typeOfAuthenticated = 2;
-                    res.render('../', typeOfAuthenticated);
+                    req.app.locals.typeOfAuthenticated = 2;       
                 }
+                res.render('index');
             }
         });
 });

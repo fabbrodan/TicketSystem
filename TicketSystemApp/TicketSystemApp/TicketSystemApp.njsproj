@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.js" />
+    <Content Include="public\javascripts\script.js" />
     <Content Include="routes\admin.js" />
     <Content Include="routes\index.js" />
     <Content Include="routes\login.js">
