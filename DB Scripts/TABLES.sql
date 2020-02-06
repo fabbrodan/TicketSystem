@@ -1,4 +1,15 @@
 IF NOT EXISTS (
+SELECT 1 FROM sys.databases
+WHERE name = 'TicketSystem')
+BEGIN
+CREATE DATABASE [TicketSystem];
+END
+GO
+
+USE [TicketSystem];
+GO
+
+IF NOT EXISTS (
 SELECT 1 FROM sys.tables WHERE name = 'Administrators')
 BEGIN
 CREATE TABLE [Administrators] (
