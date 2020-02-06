@@ -41,9 +41,12 @@
     <Content Include="package.json" />
     <Content Include="public\stylesheets\main.css" />
     <Content Include="README.md" />
+    <Content Include="views\admin\login.pug">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\index.pug" />
-    <Content Include="views\layout.pug" />
-    <Content Include="views\error.pug" />
+    <Content Include="views\shared\layout.pug" />
+    <Content Include="views\shared\error.pug" />
     <Content Include="views\login.pug" />
     <Content Include="views\users.pug" />
   </ItemGroup>
@@ -54,6 +57,8 @@
     <Folder Include="public\stylesheets\" />
     <Folder Include="routes\" />
     <Folder Include="views\" />
+    <Folder Include="views\admin\" />
+    <Folder Include="views\shared\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>

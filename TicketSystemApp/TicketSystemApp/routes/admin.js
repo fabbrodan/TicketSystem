@@ -4,7 +4,7 @@ var router = express.Router();
 var request = require('request');
 
 router.get('/', function (req, res) {
-    res.render('login');
+    res.render('admin/login');
 });
 
 router.post('/login', function (req, res) {
@@ -19,7 +19,7 @@ router.post('/login', function (req, res) {
             if (!error && response.statusCode == 200) {
                 if (body) {
                     req.app.locals.typeOfAuthenticated = 2;
-                    res.redirect('/');
+                    res.render('../', typeOfAuthenticated);
                 }
             }
         });

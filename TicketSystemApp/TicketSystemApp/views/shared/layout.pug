@@ -1,5 +1,5 @@
 block varibales
-
+-var authenticated = typeOfAuthenticated
 doctype html
 html
   head
@@ -21,4 +21,10 @@ html
                         a(class="nav-link text-dark" href="/login") Login
                     li(class="nav-item")
                         a(class="nav-link text-dark") Browse
+                    - if(authenticated == 2)
+                    li(class="nav-item")
+                        a(class="nav-link text-dark") Admin
+                    - if (authenticated > 0)
+                    li(class="nav-item")
+                        a(class="nav-link text-dark") Logout
     block content

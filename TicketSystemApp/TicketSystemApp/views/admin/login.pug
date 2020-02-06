@@ -1,8 +1,8 @@
-extends shared/layout
+extends ../shared/layout
 
 block content
-    h1 User Login
-    form(method="POST" action="/login")
+    h1 Admin Login
+    form(method="POST" action="admin/login")
         input#loginId(type="text" placeholder="Username/Email" name="loginId")
         input#password(type="password" placeholder="Password" name="password")
         button(class="btn" type="submit") Login
