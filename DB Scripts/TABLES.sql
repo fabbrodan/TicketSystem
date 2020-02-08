@@ -1,3 +1,4 @@
+-- Create database if not exists
 IF NOT EXISTS (
 SELECT 1 FROM sys.databases
 WHERE name = 'TicketSystem')
@@ -6,9 +7,11 @@ CREATE DATABASE [TicketSystem];
 END
 GO
 
+-- Set connection to use database
 USE [TicketSystem];
 GO
 
+-- Drop all the foreign keys to avoid conflicts when setting up tables
 BEGIN
 declare @sql nvarchar(max);
 
@@ -22,6 +25,7 @@ SELECT 'ALTER TABLE ' + QUOTENAME(schema_name(schema_id)) + '.' +
 EXEC(@sql);
 END
 
+-- Setup of Administrators table
 IF EXISTS (
 SELECT 1 FROM sys.tables WHERE name = 'Administrators')
 BEGIN
@@ -52,8 +56,21 @@ END
 
 DROP TABLE #adminTmp;
 END
+ELSE
+BEGIN
+CREATE TABLE [Administrators] (
+[AdminId] int not null identity(1,1),
+[LoginId] nvarchar(50) not null,
+[Email] nvarchar(100) null,
+[Password] nvarchar(max),
+[PasswordSalt] nvarchar(max),
+[RegisteredDate] datetime not null,
+CONSTRAINT [PK_Administrators] PRIMARY KEY CLUSTERED ([AdminId]),
+CONSTRAINT [UK1_Administrators] UNIQUE ([LoginId]),
+CONSTRAINT [UK2_Administrators] UNIQUE ([Email]));
+END
 
-
+-- Setup of Customers table
 IF EXISTS (
 SELECT 1 FROM sys.tables WHERE name = 'Customers')
 BEGIN
@@ -70,6 +87,8 @@ CREATE TABLE [Customers] (
 [Password] nvarchar(max) not null,
 [PasswordSalt] nvarchar(max) not null,
 [RegisteredDate] datetime not null,
+[Currency] numeric(10,2) default(0.00),
+[CouponId] int null,
 CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([CustomerId]),
 CONSTRAINT [UK1_Customers] UNIQUE ([LoginId]),
 CONSTRAINT [UK2_Customers] UNIQUE ([Email]));
@@ -85,7 +104,24 @@ END
 
 DROP TABLE #custTmp;
 END
+ELSE
+BEGIN
+CREATE TABLE [Customers] (
+[CustomerId] int not null identity(1,1),
+[LoginId] nvarchar(50) not null,
+[Email] nvarchar(100) not null,
+[PhoneNumber] nvarchar(15) null,
+[Password] nvarchar(max) not null,
+[PasswordSalt] nvarchar(max) not null,
+[RegisteredDate] datetime not null,
+[Currency] numeric(10,2) default(0.00),
+[CouponId] int null,
+CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([CustomerId]),
+CONSTRAINT [UK1_Customers] UNIQUE ([LoginId]),
+CONSTRAINT [UK2_Customers] UNIQUE ([Email]));
+END
 
+-- Setup of Tickets table
 IF EXISTS (
 SELECT 1 FROM sys.tables WHERE name = 'Tickets')
 BEGIN
@@ -97,7 +133,7 @@ DROP TABLE [Tickets];
 CREATE TABLE [Tickets] (
 [TicketId] int not null identity(1000, 1),
 [ConcertId] int not null,
-[Price] numeric (5, 2),
+[Price] numeric (10, 2),
 CONSTRAINT [PK_Tickets] PRIMARY KEY CLUSTERED ([TicketId]));
 
 BEGIN
@@ -111,7 +147,48 @@ END
 
 DROP TABLE #ticketTmp;
 END
+ELSE
+BEGIN
+CREATE TABLE [Tickets] (
+[TicketId] int not null identity(1000, 1),
+[ConcertId] int not null,
+[Price] numeric (10, 2),
+CONSTRAINT [PK_Tickets] PRIMARY KEY CLUSTERED ([TicketId]));
+END
 
+-- Setup of Coupons table
+IF EXISTS (
+SELECT 1 FROM sys.tables WHERE name = 'Coupons')
+BEGIN
+
+SELECT * INTO #couponTmp FROM [Coupons];
+
+DROP TABLE [Coupons];
+
+CREATE TABLE [Coupons] (
+[CouponId] int not null identity(5000, 1),
+[TicketId] int not null,
+CONSTRAINT [PK_Coupons] PRIMARY KEY CLUSTERED ([CouponId]));
+
+BEGIN
+SET IDENTITY_INSERT [Coupons] ON;
+INSERT INTO [Coupons]
+(CouponId, TicketId)
+SELECT CouponId, TicketId
+FROM #couponTmp;
+SET IDENTITY_INSERT [Coupons] OFF;
+END
+
+DROP TABLE #couponTmp;
+END
+ELSE
+BEGIN
+CREATE TABLE [Coupons] (
+[CouponId] int not null identity (5000,1),
+[TicketId] int not null);
+END
+
+-- Setup of Concerts table
 IF EXISTS (
 SELECT 1 FROM sys.tables WHERE name = 'Concerts')
 BEGIN
@@ -123,47 +200,69 @@ DROP TABLE [Concerts];
 CREATE TABLE [Concerts] (
 [ConcertId] int not null identity(10000, 1),
 [ArtistId] int not null,
-[LocationId] int not null,
+[VenueId] int not null,
 [CalendarDate] datetime not null,
+[Cancelled] bit default(0),
 CONSTRAINT [PK_Concerts] PRIMARY KEY CLUSTERED ([ConcertId]));
 
 BEGIN
 SET IDENTITY_INSERT [Concerts] ON;
 INSERT INTO  [Concerts]
-(ConcertId, ArtistId, LocationId, CalendarDate)
-SELECT ConcertId, ArtistId, LocationId, CalendarDate
+(ConcertId, ArtistId, VenueId, CalendarDate)
+SELECT ConcertId, ArtistId, VenueId, CalendarDate
 FROM #concertTmp;
 SET IDENTITY_INSERT [Concerts] OFF;
 END
 
 DROP TABLE #concertTmp;
 END
+ELSE
+BEGIN
+CREATE TABLE [Concerts] (
+[ConcertId] int not null identity(10000, 1),
+[ArtistId] int not null,
+[VenueId] int not null,
+[CalendarDate] datetime not null,
+[Cancelled] bit default(0),
+CONSTRAINT [PK_Concerts] PRIMARY KEY CLUSTERED ([ConcertId]));
+END
 
+-- Setup of Venues table
 IF EXISTS (
-SELECT 1 FROM sys.tables WHERE name = 'Locations')
+SELECT 1 FROM sys.tables WHERE name = 'Venues')
 BEGIN
 
-SELECT * INTO #locationTmp FROM [Locations];
+SELECT * INTO #venuesTmp FROM [Venues];
 
-DROP TABLE [Locations];
+DROP TABLE [Venues];
 
-CREATE TABLE [Locations] (
-[LocationId] int not null identity(1,1),
-[LocationCoordinates] nvarchar(150) null,
-CONSTRAINT [PK_Locations] PRIMARY KEY CLUSTERED ([LocationId]));
+CREATE TABLE [Venues] (
+[VenueId] int not null identity(1,1),
+[VenueName] nvarchar(255) not null,
+[Coordinates] nvarchar(150) null,
+CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]));
 
 BEGIN
-SET IDENTITY_INSERT [Locations] ON;
-INSERT INTO [Locations]
-(LocationId, LocationCoordinates)
-SELECT LocationId, LocationCoordinates
-FROM #locationTmp;
-SET IDENTITY_INSERT [Locations] OFF;
+SET IDENTITY_INSERT [Venues] ON;
+INSERT INTO [Venues]
+(VenueId, VenueName, Coordinates)
+SELECT VenueId, VenueName, Coordinates
+FROM #venuesTmp;
+SET IDENTITY_INSERT [Venues] OFF;
 END
 
 DROP TABLE #locationTmp;
 END
+ELSE
+BEGIN
+CREATE TABLE [Venues] (
+[VenueId] int not null identity (1,1),
+[VenueName] nvarchar(255) not null,
+[Coordinates] nvarchar(150) null,
+CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]));
+END
 
+-- Setup of CustomerTickets table
 IF EXISTS (
 SELECT 1 FROM sys.tables WHERE name = 'CustomerTickets')
 BEGIN
@@ -187,7 +286,16 @@ END
 
 DROP TABLE #custTicketTmp;
 END
+ELSE
+BEGIN
+CREATE TABLE [CustomerTickets] (
+[CustomerId] int not null,
+[TicketId] int not null,
+[SoldDate] datetime not null default(GETDATE()),
+CONSTRAINT [PK_CustomerTickets] PRIMARY KEY CLUSTERED ([CustomerId], [TicketId]));
+END
 
+-- Setup of Artists table
 IF EXISTS (
 SELECT 1 FROM sys.tables WHERE name = 'Artists')
 BEGIN
@@ -212,7 +320,15 @@ END
 
 DROP TABLE #artistTmp;
 END
+ELSE
+BEGIN
+CREATE TABLE [Artists] (
+[ArtistId] int not null identity(1,1),
+[ArtistName] nvarchar(255) not null,
+CONSTRAINT [PK_Artists] PRIMARY KEY CLUSTERED ([ArtistId]));
+END
 
+-- Setup of Foreign Keys
 ALTER TABLE [Concerts]
 ADD CONSTRAINT [FK1_Concerts]
 FOREIGN KEY ([ArtistId])
@@ -221,8 +337,8 @@ ON DELETE CASCADE;
 
 ALTER TABLE [Concerts]
 ADD CONSTRAINT [FK2_Concerts]
-FOREIGN KEY ([LocationId])
-REFERENCES [Locations] ([LocationId]);
+FOREIGN KEY ([VenueId])
+REFERENCES [Venues] ([VenueId]);
 
 ALTER TABLE [CustomerTickets]
 ADD CONSTRAINT [FK1_CustomerTickets]
@@ -238,3 +354,8 @@ ALTER TABLE [Tickets]
 ADD CONSTRAINT [FK1_Tickets]
 FOREIGN KEY ([ConcertId])
 REFERENCES [Concerts] ([ConcertId]);
+
+ALTER TABLE [Coupons]
+ADD CONSTRAINT [FK1_Coupons]
+FOREIGN KEY ([TicketId])
+REFERENCES [Tickets] ([TicketId]);
