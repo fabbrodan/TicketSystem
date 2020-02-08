@@ -14,5 +14,7 @@ namespace TicketSystemAPI.Models
         public string Password { get; set; }
         public string PasswordSalt { get; set; }
         public string RegisteredDate { get; set; }
+
+        public decimal Currency { get; set; }
     }
 }

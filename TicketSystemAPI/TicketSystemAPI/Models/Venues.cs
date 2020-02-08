@@ -9,6 +9,7 @@ namespace TicketSystemAPI.Models
     {
         public int VenueId { get; set; }
         public string VenueName { get; set; }
+        public int Capacity { get; set; }
         public string Coordinates { get; set; }
     }
 }

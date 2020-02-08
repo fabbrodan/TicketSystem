@@ -100,5 +100,12 @@ namespace TicketSystemAPI.Controllers
                 }
             }
         }
+
+        [HttpPost]
+        [Route("purchase/{id}")]
+        public string Purchase(int id, [FromBody] Customers customer)
+        {
+            return "called";
+        }
     }
 }

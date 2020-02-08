@@ -87,8 +87,7 @@ CREATE TABLE [Customers] (
 [Password] nvarchar(max) not null,
 [PasswordSalt] nvarchar(max) not null,
 [RegisteredDate] datetime not null,
-[Currency] numeric(10,2) default(0.00),
-[CouponId] int null,
+[Currency] numeric(10,2) default(0.00)
 CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([CustomerId]),
 CONSTRAINT [UK1_Customers] UNIQUE ([LoginId]),
 CONSTRAINT [UK2_Customers] UNIQUE ([Email]));
@@ -96,8 +95,8 @@ CONSTRAINT [UK2_Customers] UNIQUE ([Email]));
 BEGIN
 SET IDENTITY_INSERT [Customers] ON;
 INSERT INTO [Customers]
-(CustomerId, LoginId, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate)
-SELECT CustomerId, LoginId, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate
+(CustomerId, LoginId, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate, Currency)
+SELECT CustomerId, LoginId, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate, Currency
 FROM #custTmp;
 SET IDENTITY_INSERT [Customers] OFF;
 END
@@ -115,7 +114,6 @@ CREATE TABLE [Customers] (
 [PasswordSalt] nvarchar(max) not null,
 [RegisteredDate] datetime not null,
 [Currency] numeric(10,2) default(0.00),
-[CouponId] int null,
 CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([CustomerId]),
 CONSTRAINT [UK1_Customers] UNIQUE ([LoginId]),
 CONSTRAINT [UK2_Customers] UNIQUE ([Email]));
@@ -239,27 +237,31 @@ DROP TABLE [Venues];
 CREATE TABLE [Venues] (
 [VenueId] int not null identity(1,1),
 [VenueName] nvarchar(255) not null,
+[Capacity] int null,
 [Coordinates] nvarchar(150) null,
-CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]));
+CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]),
+CONSTRAINT [CHK_CenueCapacity] CHECK ([Capacity] > 0));
 
 BEGIN
 SET IDENTITY_INSERT [Venues] ON;
 INSERT INTO [Venues]
-(VenueId, VenueName, Coordinates)
-SELECT VenueId, VenueName, Coordinates
+(VenueId, VenueName, Capacity, Coordinates)
+SELECT VenueId, VenueName, Capacity, Coordinates
 FROM #venuesTmp;
 SET IDENTITY_INSERT [Venues] OFF;
 END
 
-DROP TABLE #locationTmp;
+DROP TABLE #venuesTmp;
 END
 ELSE
 BEGIN
 CREATE TABLE [Venues] (
 [VenueId] int not null identity (1,1),
 [VenueName] nvarchar(255) not null,
+[Capacity] int null,
 [Coordinates] nvarchar(150) null,
-CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]));
+CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]),
+CONSTRAINT [CHK_CenueCapacity] CHECK ([Capacity] > 0));
 END
 
 -- Setup of CustomerTickets table
