@@ -48,7 +48,7 @@ namespace TicketSystemAPI.Controllers
             return customers;
         }
 
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public Customers Get(int id)
         {
             IEnumerable<Customers> customer = null;

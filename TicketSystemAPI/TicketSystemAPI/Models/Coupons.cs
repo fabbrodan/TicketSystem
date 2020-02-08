@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace TicketSystemAPI.Models
 {
-    public class Locations
+    public class Coupons
     {
-        public int LocationId { get; set; }
-        public string LocationCoordinates { get; set; }
+        public int CouponId { get; set; }
+        public int TicketId { get; set; }
     }
 }

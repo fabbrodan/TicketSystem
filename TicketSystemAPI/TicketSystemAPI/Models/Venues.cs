@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace TicketSystemAPI.Models
 {
-    public class Concerts
+    public class Venues
     {
-        public int ConcertId { get; set; }
-        public int ArtistId { get; set; }
         public int VenueId { get; set; }
-        public DateTime CalendarDate { get; set; }
+        public string VenueName { get; set; }
+        public string Coordinates { get; set; }
     }
 }
