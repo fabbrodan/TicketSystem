@@ -69,6 +69,32 @@ namespace TicketSystemAPI.Controllers
         }
 
         [HttpPost]
+        [Route("AddFunds")]
+        public Customers AddFunds([FromBody] Customers customer)
+        {
+            Customers returnCust = null;
+
+            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "UPDATE Customers SET Currency = Currency + @currency WHERE CustomerId = @customerId;";
+                    conn.Execute(sql, new { currency = customer.Currency, customerId = customer.CustomerId });
+
+                    string returnSql = "SELECT * FROM Customers WHERE CustomerId = @customerId;";
+                    returnCust = conn.Query<Customers>(returnSql, new { customerId = customer.CustomerId }).FirstOrDefault<Customers>();
+                }
+                catch (SqlException exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            }
+
+            return returnCust;
+        }
+
+        [HttpPost]
         [Route("NewUser")]
         public Customers NewUser([FromBody] Customers customer)
         {
