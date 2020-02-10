@@ -9,6 +9,5 @@ namespace TicketSystemAPI.Models
     {
         public int TicketId { get; set; }
         public int ConcertId { get; set; }
-        public decimal Price { get; set; }
     }
 }

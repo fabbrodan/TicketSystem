@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -105,7 +106,47 @@ namespace TicketSystemAPI.Controllers
         [Route("purchase/{id}")]
         public string Purchase(int id, [FromBody] Customers customer)
         {
-            return "called";
+            Concerts concert = null;
+
+            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string concertSelect = "SELECT * FROM Concerts WHERE ConcertId = @concertId;";
+                    concert = conn.Query<Concerts>(concertSelect, new { concertId = id }).FirstOrDefault<Concerts>();
+
+                    string customerSelect = "SELECT * FROM Customers WHERE CustomerId = @customerId;";
+                    customer = conn.Query<Customers>(customerSelect, new { customerId = customer.CustomerId }).FirstOrDefault<Customers>();
+
+                }
+                catch (SqlException exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            }
+
+            if (concert.Price > customer.Currency)
+            {
+                return "Not enough money";
+            }
+            else
+            {
+                using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        conn.Execute("SP_Purchase", new { concertId = concert.ConcertId, customerId = customer.CustomerId }, commandType: CommandType.StoredProcedure);
+                    }
+                    catch (SqlException exc)
+                    {
+                        Console.WriteLine(exc.Message);
+                    }
+                }
+
+                return "Bought!";
+            }
         }
     }
 }

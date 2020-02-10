@@ -131,14 +131,13 @@ DROP TABLE [Tickets];
 CREATE TABLE [Tickets] (
 [TicketId] int not null identity(1000, 1),
 [ConcertId] int not null,
-[Price] numeric (10, 2),
 CONSTRAINT [PK_Tickets] PRIMARY KEY CLUSTERED ([TicketId]));
 
 BEGIN
 SET IDENTITY_INSERT [Tickets] ON;
 INSERT INTO [Tickets]
-(TicketId, ConcertId, Price)
-SELECT TicketId, ConcertId, Price
+(TicketId, ConcertId)
+SELECT TicketId, ConcertId
 FROM #ticketTmp;
 SET IDENTITY_INSERT [Tickets] OFF;
 END
@@ -201,13 +200,15 @@ CREATE TABLE [Concerts] (
 [VenueId] int not null,
 [CalendarDate] datetime not null,
 [Cancelled] bit default(0),
+[Price] numeric(10, 2),
+[TicketsLeft] int null,
 CONSTRAINT [PK_Concerts] PRIMARY KEY CLUSTERED ([ConcertId]));
 
 BEGIN
 SET IDENTITY_INSERT [Concerts] ON;
 INSERT INTO  [Concerts]
-(ConcertId, ArtistId, VenueId, CalendarDate)
-SELECT ConcertId, ArtistId, VenueId, CalendarDate
+(ConcertId, ArtistId, VenueId, CalendarDate, Cancelled, Price, TicketsLeft)
+SELECT ConcertId, ArtistId, VenueId, CalendarDate, Cancelled, Price, TicketsLeft
 FROM #concertTmp;
 SET IDENTITY_INSERT [Concerts] OFF;
 END
@@ -222,6 +223,8 @@ CREATE TABLE [Concerts] (
 [VenueId] int not null,
 [CalendarDate] datetime not null,
 [Cancelled] bit default(0),
+[Price] numeric (10,2) null,
+[TicketsLeft] int null,
 CONSTRAINT [PK_Concerts] PRIMARY KEY CLUSTERED ([ConcertId]));
 END
 

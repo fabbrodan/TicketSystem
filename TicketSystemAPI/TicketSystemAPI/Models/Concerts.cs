@@ -11,5 +11,8 @@ namespace TicketSystemAPI.Models
         public int ArtistId { get; set; }
         public int VenueId { get; set; }
         public DateTime CalendarDate { get; set; }
+
+        public bool Cancelled { get; set; }
+        public decimal Price { get; set; }
     }
 }
