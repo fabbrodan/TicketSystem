@@ -27,6 +27,7 @@ namespace TicketSystemAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.Configure<ElasticOptions>(Configuration.GetSection("ElasticSettings"));
             services.Configure<DbOptions>(Configuration.GetSection("DbConnectionString"));
         }
 
