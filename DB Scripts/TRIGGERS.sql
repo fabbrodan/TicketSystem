@@ -26,3 +26,17 @@ INNER JOIN inserted i ON t.ConcertId = i.ConcertId
 END
 END
 GO
+
+CREATE TRIGGER [TR_Concert_Default_TicketsLeft] ON [Concerts]
+AFTER INSERT
+AS
+BEGIN
+
+UPDATE Concerts
+SET TicketsLeft = (
+SELECT Capacity
+FROM Venues v
+INNER JOIN inserted i ON v.VenueId = i.VenueId);
+
+END
+GO

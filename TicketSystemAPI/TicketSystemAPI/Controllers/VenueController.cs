@@ -74,8 +74,8 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO Venues (VenueName, Coordinates)" +
-                        "VALUES(@VenueName, @Coordinates);";
+                    string sql = "INSERT INTO Venues (VenueName, Coordinates, Capacity)" +
+                        "VALUES(@VenueName, @Coordinates, @Capacity);";
                     conn.Execute(sql, venue);
                 }
                 catch (SqlException exc)

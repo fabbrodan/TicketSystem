@@ -118,38 +118,33 @@ namespace TicketSystemAPI.Controllers
             }
         }
 
-        /*
+        
         [HttpPost]
         [Route("Index")]
         public async void Index()
         {
+            await _client.Indices.DeleteAsync("mainindex");
+
             using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
             {
                 try
                 {
-                    string sql = @"SELECT c.CalendarDate, c.Cancelled, c.Price, c.TicketsLeft, a.ArtistName, v.VenueName, v.Capacity, v.Coordinates
+                    string sql = @"SELECT c.ConcertId, c.CalendarDate as ConcertDate, c.Cancelled, c.Price as ConcertPrice, c.TicketsLeft, a.ArtistName, v.VenueName, v.Capacity as VenueCapacity, v.Coordinates
                                 FROM Concerts c
                                 INNER JOIN Artists a ON c.ArtistId = c.ArtistId
                                 INNER JOIN Venues v ON c.VenueId = v.VenueId";
                     conn.Open();
-                    IEnumerable<dynamic>indexPOCOs = await conn.QueryAsync(sql);
+                    IEnumerable<IndexObject>indexObjs = await conn.QueryAsync<IndexObject>(sql);
 
-                    BulkDescriptor descriptor = new BulkDescriptor();
-
-                    foreach (var doc in indexPOCOs)
-                    {
-                        descriptor.Index<object>(i => i
-                            .Index("mainIndex")
-                            .Document(doc));
-                    }
-
-                    await _client.BulkAsync(descriptor);
+                    var indexResponse = await _client.BulkAsync(request => request
+                        .Index("mainindex")
+                        .IndexMany<IndexObject>(indexObjs));
                 }
                 catch (SqlException exc)
                 {
                     Console.WriteLine(exc.Message);
                 }
             }
-        }*/
+        }
     }
 }

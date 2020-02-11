@@ -73,8 +73,8 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO Concerts(ArtistId, VenueId, CalendarDate)" +
-                        "VALUES(@ArtistId, @VenueId, @CalendarDate);";
+                    string sql = "INSERT INTO Concerts(ArtistId, VenueId, CalendarDate, Price)" +
+                        "VALUES(@ArtistId, @VenueId, @CalendarDate, @Price);";
                     conn.Execute(sql, concert);
                 }
                 catch (SqlException exc)
