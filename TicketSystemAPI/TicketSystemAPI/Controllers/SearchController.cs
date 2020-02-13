@@ -18,7 +18,8 @@ namespace TicketSystemAPI.Controllers
 
         public SearchController(IOptions<DbOptions> dbOptions, IOptions<ElasticOptions> elasticOptions)
         {
-            _client = new ElasticClient(new ConnectionSettings(new Uri(elasticOptions.Value.ClusterUrl)));
+            var settings = new ConnectionSettings(new Uri(elasticOptions.Value.ClusterUrl)).DefaultMappingFor<IndexObject>(m => m.IndexName("mainindex"));
+            _client = new ElasticClient(settings);
             _dbOptions = dbOptions;
         }
 
@@ -26,20 +27,16 @@ namespace TicketSystemAPI.Controllers
         [Route("Get")]
         public IEnumerable<IndexObject> Get([FromQuery] string searchParam)
         {
-            // FIX THIS BULL SHIT CURRENTLY WORKS LIKE A CARTESIAN PRODUCT SEARCH?!?!?!
-            var searchResponse = _client
-                .Search<IndexObject>(s => s
-                .Index("mainindex")
-                    .Query(q => q
-                        .MultiMatch(mu => mu
-                            .Fuzziness(Fuzziness.Auto)
-                            .FuzzyRewrite(MultiTermQueryRewrite.ConstantScore)
-                            .FuzzyTranspositions(true)
-                            .Fields(f => f
-                                .Field(v => v.VenueName, 2.2)
-                                .Field(a => a.ArtistName, 1.5)))));
+            searchParam = searchParam.Insert(0, "*").Insert(searchParam.Length + 1, "*").ToLower().Trim();
+            var searchResponse = _client.Search<IndexObject>(s => s
+            .Query(q => q
+            .QueryString(qs => qs
+            .Fields(f => f.Field(a => a.ArtistName).Field(v => v.VenueName))
+            .AllowLeadingWildcard()
+            .Fuzziness(Fuzziness.EditDistance(3))
+            .Query(searchParam))).Explain(true));
 
-            IEnumerable<IndexObject> hits = searchResponse.Documents;
+            IEnumerable <IndexObject> hits = searchResponse.Documents;
 
             return hits;
             

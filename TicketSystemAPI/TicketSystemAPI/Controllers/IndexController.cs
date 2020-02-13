@@ -131,7 +131,7 @@ namespace TicketSystemAPI.Controllers
                 {
                     string sql = @"SELECT c.ConcertId, c.CalendarDate as ConcertDate, c.Cancelled, c.Price as ConcertPrice, c.TicketsLeft, a.ArtistName, v.VenueName, v.Capacity as VenueCapacity, v.Coordinates
                                 FROM Concerts c
-                                INNER JOIN Artists a ON c.ArtistId = c.ArtistId
+                                INNER JOIN Artists a ON c.ArtistId = a.ArtistId
                                 INNER JOIN Venues v ON c.VenueId = v.VenueId";
                     conn.Open();
                     IEnumerable<IndexObject>indexObjs = await conn.QueryAsync<IndexObject>(sql);
