@@ -27,18 +27,21 @@ namespace TicketSystemAPI.Controllers
         [Route("Get")]
         public IEnumerable<IndexObject> Get([FromQuery] string searchParam)
         {
+            if(searchParam == null || String.IsNullOrEmpty(searchParam))
+            {
+                return _client.Search<IndexObject>(s => s.Query(q => q.MatchAll())).Documents;
+            }
+
             searchParam = searchParam.Insert(0, "*").Insert(searchParam.Length + 1, "*").ToLower().Trim();
             var searchResponse = _client.Search<IndexObject>(s => s
             .Query(q => q
             .QueryString(qs => qs
             .Fields(f => f.Field(a => a.ArtistName).Field(v => v.VenueName))
-            .AllowLeadingWildcard()
+            //.AllowLeadingWildcard()
             .Fuzziness(Fuzziness.EditDistance(3))
             .Query(searchParam))).Explain(true));
 
-            IEnumerable <IndexObject> hits = searchResponse.Documents;
-
-            return hits;
+            return searchResponse.Documents;
             
         }
     }
