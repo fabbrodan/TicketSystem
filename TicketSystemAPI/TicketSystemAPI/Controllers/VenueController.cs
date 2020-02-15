@@ -29,20 +29,8 @@ namespace TicketSystemAPI.Controllers
         public IEnumerable<Venues> Get()
         {
             IEnumerable<Venues> venues = null;
-            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    string sql = "SELECT * FROM Venues;";
-                    venues = conn.Query<Venues>(sql);
-                }
-                catch (SqlException exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
-            }
-
+            var searchResponse = _client.Search<Venues>(s => s.MatchAll());
+            venues = searchResponse.Documents;
             return venues;
         }
 
@@ -51,19 +39,14 @@ namespace TicketSystemAPI.Controllers
         public Venues Get(int id)
         {
             Venues venue = null;
-            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    string sql = "SELECT * FROM Venues WHERE VenueId = @venueId;";
-                    venue = conn.Query<Venues>(sql, new { venueId = id }).FirstOrDefault<Venues>();
-                }
-                catch (SqlException exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
-            }
+            var searchResponse = _client.Search<Venues>(s => s
+                .Query(q => q
+                    .Match(m => m
+                        .Field(f => f.VenueId)
+                            .Query(id.ToString()))));
+
+            venue = searchResponse.Documents.FirstOrDefault();
+
             return venue;
         }
 
