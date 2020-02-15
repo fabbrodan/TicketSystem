@@ -32,40 +32,27 @@ namespace TicketSystemAPI.Controllers
         {
             IEnumerable<Customers> customers = null;
 
-            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    string sql = "SELECT * FROM Customers;";
-                    customers = conn.Query<Customers>(sql);
-                }
-                catch(SqlException exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
-            }
+            var searchResponse = _client.Search<Customers>(s => s.MatchAll());
+
+            customers = searchResponse.Documents;
+
             return customers;
         }
 
         [HttpGet("{id}")]
         public Customers Get(int id)
         {
-            IEnumerable<Customers> customer = null;
-            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    string sql = "SELECT * FROM Customers WHERE CustomerId = @customerId";
-                    customer = conn.Query<Customers>(sql, new { customerId = id });
-                }
-                catch (SqlException exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
-            }
-            return customer.FirstOrDefault();
+            Customers customer = null;
+
+            var searchResponse = _client.Search<Customers>(s => s
+                .Query(q => q
+                    .Match(m => m
+                        .Field(f => f.CustomerId)
+                            .Query(id.ToString()))));
+
+            customer = searchResponse.Documents.FirstOrDefault();
+
+            return customer;
         }
 
         [HttpPost]
