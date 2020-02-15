@@ -27,41 +27,23 @@ namespace TicketSystemAPI.Controllers
         [HttpGet]
         public IEnumerable<Artists> Get()
         {
-            IEnumerable<Artists> artists = null;
-            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    string sql = "SELECT * FROM Artists;";
-                    artists = conn.Query<Artists>(sql);
-                }
-                catch (SqlException exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
-            }
+            var searchResponse = _client.Search<Artists>(s => s.MatchAll());
+
+            IEnumerable<Artists> artists = searchResponse.Documents;
+
             return artists;
         }
 
         [HttpGet("{id}")]
         public Artists Get(int id)
         {
-            Artists artist = null;
-            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
-            {
-                try
-                {
-                    conn.Open();
-                    string sql = "SELECT * FROM Artists WHERE ArtistId = @artistId;";
-                    artist = conn.Query<Artists>(sql, new { artistId = id }).FirstOrDefault<Artists>();
-                }
-                catch (SqlException exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
-            }
-            return artist;
+            var response = _client.Search<Artists>(s => s
+                .Query(q => q
+                    .Match(m => m
+                        .Field(f => f.ArtistId)
+                            .Query(id.ToString()))));
+
+            return response.Documents.FirstOrDefault();
         }
 
         [HttpPost]
