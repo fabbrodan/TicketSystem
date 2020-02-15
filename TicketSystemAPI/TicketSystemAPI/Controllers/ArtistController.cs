@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Data.SqlClient;
 using TicketSystemAPI.Models;
 using TicketSystemAPI.Utils;
 using Dapper;
+using Nest;
 
 namespace TicketSystemAPI.Controllers
 {
@@ -17,10 +16,12 @@ namespace TicketSystemAPI.Controllers
     public class ArtistController : ControllerBase
     {
         private readonly IOptions<DbOptions> _dbOptions;
+        private readonly ElasticClient _client;
 
-        public ArtistController(IOptions<DbOptions> dbOptions)
+        public ArtistController(IOptions<DbOptions> dbOptions, IOptions<ElasticOptions> elasticOptions)
         {
             _dbOptions = dbOptions;
+            _client = new ElasticClient(new ConnectionSettings(new Uri(elasticOptions.Value.ClusterUrl)).DefaultMappingFor<Artists>(m => m.IndexName("artists")));
         }
 
         [HttpGet]
@@ -71,12 +72,20 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO Artists (ArtistName) VALUES(@ArtistName);";
-                    conn.Execute(sql, artist);
+                    string insertSql = "INSERT INTO Artists (ArtistName) VALUES(@ArtistName);";
+                    conn.Execute(insertSql, artist);
                 }
                 catch (SqlException exc)
                 {
                     Console.WriteLine(exc.Message);
+                }
+
+                string selectSql = "SELECT * FROM Artists WHERE ArtistName = @ArtistName;";
+                Artists indexArtist = conn.Query<Artists>(selectSql, artist).FirstOrDefault();
+
+                if (indexArtist != null)
+                {
+                    _client.IndexDocument(indexArtist);
                 }
             }
         }
