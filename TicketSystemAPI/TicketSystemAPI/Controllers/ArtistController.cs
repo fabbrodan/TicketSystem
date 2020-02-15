@@ -106,6 +106,11 @@ namespace TicketSystemAPI.Controllers
                     Console.WriteLine(exc.Message);
                 }
             }
+
+            var deleteResponse = _client.DeleteByQuery<Artists>(s => s
+                .Query(q => q
+                    .Match(m => m
+                        .Field(f => f.ArtistId).Query(id.ToString()))));
         }
     }
 }
