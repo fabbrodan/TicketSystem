@@ -3,12 +3,12 @@ using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TicketSystemAPI.Utils;
 using TicketSystemAPI.Models;
+using Nest;
+using System.Net;
 
 namespace TicketSystemAPI.Controllers
 {
@@ -17,10 +17,12 @@ namespace TicketSystemAPI.Controllers
     public class VenueController : ControllerBase
     {
         private readonly IOptions<DbOptions> _dbOptions;
+        private readonly ElasticClient _client;
 
-        public VenueController(IOptions<DbOptions> dbOptions)
+        public VenueController(IOptions<DbOptions> dbOptions, IOptions<ElasticOptions> elasticOptions)
         {
             _dbOptions = dbOptions;
+            _client = new ElasticClient(new ConnectionSettings(new Uri(elasticOptions.Value.ClusterUrl)).DefaultMappingFor<Venues>(m => m.IndexName("venues")));
         }
         
         [HttpGet]
@@ -74,13 +76,21 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO Venues (VenueName, Coordinates, Capacity)" +
-                        "VALUES(@VenueName, @Coordinates, @Capacity);";
-                    conn.Execute(sql, venue);
+                    string insertSql = "INSERT INTO Venues (VenueName, Coordinates, Capacity, City)" +
+                        "VALUES(@VenueName, @Coordinates, @Capacity, @City);";
+                    conn.Execute(insertSql, venue);
                 }
                 catch (SqlException exc)
                 {
                     Console.WriteLine(exc.Message);
+                }
+
+                string selectSql = "SELECT * FROM Venues WHERE VenueName = @VenueName;";
+                Venues indexVenue = conn.Query<Venues>(selectSql, venue).FirstOrDefault();
+                
+                if(indexVenue != null)
+                {
+                    _client.IndexDocument(indexVenue);
                 }
             }
         }
@@ -102,6 +112,11 @@ namespace TicketSystemAPI.Controllers
                     Console.WriteLine(exc.Message);
                 }
             }
+
+            var deleteResponse = _client.DeleteByQuery<Venues>(r => r
+                .Query(q => q
+                    .Match(m => m
+                        .Field(f => f.VenueId).Query(id.ToString()))));
         }
     }
 }

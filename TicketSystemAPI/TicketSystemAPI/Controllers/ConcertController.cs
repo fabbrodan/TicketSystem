@@ -2,14 +2,13 @@
 using System.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Data.SqlClient;
 using Dapper;
 using TicketSystemAPI.Models;
 using TicketSystemAPI.Utils;
+using Nest;
 
 namespace TicketSystemAPI.Controllers
 {
@@ -18,10 +17,12 @@ namespace TicketSystemAPI.Controllers
     public class ConcertController : ControllerBase
     {
         private readonly IOptions<DbOptions> _dbOptions;
+        private readonly ElasticClient _client;
 
-        public ConcertController(IOptions<DbOptions> dbOptions)
+        public ConcertController(IOptions<DbOptions> dbOptions, IOptions<ElasticOptions> elasticOptions)
         {
             _dbOptions = dbOptions;
+            _client = new ElasticClient(new ConnectionSettings(new Uri(elasticOptions.Value.ClusterUrl)).DefaultMappingFor<Concerts>(m => m.IndexName("concerts")));
         }
 
         [HttpGet]
@@ -73,13 +74,21 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = "INSERT INTO Concerts(ArtistId, VenueId, CalendarDate, Price)" +
+                    string insertSql = "INSERT INTO Concerts(ArtistId, VenueId, CalendarDate, Price)" +
                         "VALUES(@ArtistId, @VenueId, @CalendarDate, @Price);";
-                    conn.Execute(sql, concert);
+                    conn.Execute(insertSql, concert);
                 }
                 catch (SqlException exc)
                 {
                     Console.WriteLine(exc.Message);
+                }
+
+                string selectSql = "SELECT * FROM Concerts WHERE ArtistId = @ArtistId AND VenueId = @VenueId AND CalendarDate = @CalendarDate;";
+                Concerts indexConcert = conn.Query<Concerts>(selectSql, concert).FirstOrDefault();
+
+                if (indexConcert != null)
+                {
+                    _client.IndexDocument(indexConcert);
                 }
             }
         }
@@ -100,6 +109,12 @@ namespace TicketSystemAPI.Controllers
                     Console.WriteLine(exc.Message);
                 }
             }
+
+            var deleteResponse = _client.DeleteByQuery<Concerts>(r => r
+                .Query(q => q
+                    .Match(m => m
+                        .Field(f => f.ConcertId)
+                            .Query(id.ToString()))));
         }
 
         [HttpPost]
@@ -142,6 +157,14 @@ namespace TicketSystemAPI.Controllers
                     catch (SqlException exc)
                     {
                         Console.WriteLine(exc.Message);
+                    }
+
+                    string selectSql = "SELECT * FROM Concerts WHERE ArtistId = @ArtistId AND VenueId = @VenueId AND CalendarDate = @CalendarDate;";
+                    Concerts indexConcert = conn.Query(selectSql, concert).FirstOrDefault();
+
+                    if (indexConcert != null)
+                    {
+                        _client.IndexDocument(indexConcert);
                     }
                 }
 

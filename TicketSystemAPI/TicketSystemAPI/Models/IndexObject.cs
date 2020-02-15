@@ -16,5 +16,6 @@ namespace TicketSystemAPI.Models
         public bool Cancelled { get; set; }
         public int TicketsLeft { get; set; }
         public string Coordinates { get; set; }
+        public string City { get; set; }
     }
 }

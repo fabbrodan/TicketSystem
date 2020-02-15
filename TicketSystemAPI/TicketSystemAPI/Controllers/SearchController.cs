@@ -36,7 +36,7 @@ namespace TicketSystemAPI.Controllers
             var searchResponse = _client.Search<IndexObject>(s => s
             .Query(q => q
             .QueryString(qs => qs
-            .Fields(f => f.Field(a => a.ArtistName).Field(v => v.VenueName))
+            .Fields(f => f.Field(a => a.ArtistName).Field(v => v.VenueName).Field(c => c.City))
             //.AllowLeadingWildcard()
             .Fuzziness(Fuzziness.EditDistance(3))
             .Query(searchParam))).Explain(true));

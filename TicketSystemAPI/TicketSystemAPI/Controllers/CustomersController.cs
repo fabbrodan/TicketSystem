@@ -2,8 +2,6 @@
 using Dapper;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TicketSystemAPI.Models;
 using PasswordHasher;
@@ -12,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using TicketSystemAPI.Utils;
 using Microsoft.Extensions.Options;
+using Nest;
 
 namespace TicketSystemAPI.Controllers
 {
@@ -19,12 +18,13 @@ namespace TicketSystemAPI.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-
+        private readonly ElasticClient _client;
         private readonly IOptions<DbOptions> _dbOptions;
 
-        public CustomersController (IOptions<DbOptions> dbOptions)
+        public CustomersController (IOptions<DbOptions> dbOptions, IOptions<ElasticOptions> elasticOptions)
         {
             _dbOptions = dbOptions;
+            _client = new ElasticClient(new ConnectionSettings(new Uri(elasticOptions.Value.ClusterUrl)).DefaultMappingFor<Customers>(m => m.IndexName("customers")));
         }
 
         [HttpGet]
@@ -89,6 +89,8 @@ namespace TicketSystemAPI.Controllers
                 {
                     Console.WriteLine(exc.Message);
                 }
+
+                _client.IndexDocument(returnCust);
             }
 
             return returnCust;
@@ -130,6 +132,9 @@ namespace TicketSystemAPI.Controllers
                     Console.WriteLine(exc.Message);
                 }
             }
+
+            _client.IndexDocument<Customers>(newCustomer);
+
             return newCustomer;
         }
 
@@ -190,6 +195,13 @@ namespace TicketSystemAPI.Controllers
                 }
 
             }
+
+            var deleteResonse = _client.DeleteByQuery<Customers>(r => r
+                .Query(q => q
+                    .Match(m => m
+                        .Field(f => f.CustomerId)
+                            .Query(id.ToString()))));
+
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
     }

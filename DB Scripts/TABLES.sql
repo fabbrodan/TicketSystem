@@ -242,6 +242,7 @@ CREATE TABLE [Venues] (
 [VenueName] nvarchar(255) not null,
 [Capacity] int null,
 [Coordinates] nvarchar(150) null,
+[City] nvarchar(100) null,
 CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]),
 CONSTRAINT [CHK_CenueCapacity] CHECK ([Capacity] > 0));
 
@@ -249,7 +250,7 @@ BEGIN
 SET IDENTITY_INSERT [Venues] ON;
 INSERT INTO [Venues]
 (VenueId, VenueName, Capacity, Coordinates)
-SELECT VenueId, VenueName, Capacity, Coordinates
+SELECT VenueId, VenueName, Capacity, Coordinates, City
 FROM #venuesTmp;
 SET IDENTITY_INSERT [Venues] OFF;
 END

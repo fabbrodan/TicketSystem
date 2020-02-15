@@ -107,7 +107,7 @@ namespace TicketSystemAPI.Controllers
                 }
             }
 
-            var deleteResponse = _client.DeleteByQuery<Artists>(s => s
+            var deleteResponse = _client.DeleteByQuery<Artists>(r => r
                 .Query(q => q
                     .Match(m => m
                         .Field(f => f.ArtistId).Query(id.ToString()))));
