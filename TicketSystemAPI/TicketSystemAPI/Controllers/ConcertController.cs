@@ -171,5 +171,34 @@ namespace TicketSystemAPI.Controllers
                 return "Bought!";
             }
         }
+
+        [HttpPost]
+        [Route("Cancel/{id}")]
+        public Concerts Cancel(int id)
+        {
+            Concerts returnConcert = null;
+
+            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string updateSql = "UPDATE Concerts SET Cancelled = 1 WHERE ConcertId = @ConcertId;";
+                    conn.Execute(updateSql, new { ConcertId = id });
+
+                    string selectSql = "SELECT * FROM Concerts WHERE ConcertId = @ConcertId;";
+                    returnConcert = conn.Query<Concerts>(selectSql, new { ConcertId = id }).FirstOrDefault();
+
+                }
+                catch (SqlException exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            }
+
+            _client.IndexDocument<Concerts>(returnConcert);
+
+            return returnConcert;
+        }
     }
 }
