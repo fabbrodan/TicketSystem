@@ -1,5 +1,26 @@
 extends shared/layout
 
 block content
+
+    div#mainUserDiv(class="container")
     
-    p #{userName}
+    script.
+        var customer = !{customer};
+        var customerObj = JSON.parse(customer);
+        console.log(customerObj);
+
+        var pNameNode = document.createElement("p");
+        var tNameNode = document.createTextNode("Username: " + customerObj["loginId"]);
+        pNameNode.appendChild(tNameNode);
+        
+        var pEmailNode = document.createElement("p");
+        var tEmailNode = document.createTextNode("Email: " + customerObj["email"]);
+        pEmailNode.appendChild(tEmailNode);
+
+        var pCurrencyNode = document.createElement("p");
+        var tCurrencyNode = document.createTextNode("Pesetas: " + customerObj["currency"]);
+        pCurrencyNode.appendChild(tCurrencyNode);
+
+        document.getElementById("mainUserDiv").appendChild(pNameNode);
+        document.getElementById("mainUserDiv").appendChild(pEmailNode);
+        document.getElementById("mainUserDiv").appendChild(pCurrencyNode);

@@ -1,18 +1,20 @@
 block varibales
 -var authenticated = typeOfAuthenticated
+-var custId = customerId
 doctype html
 html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/main.css')
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    script(src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js", integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm", crossorigin="anonymous")
     link(href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh", crossorigin="anonymous")
     script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js", integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6", crossorigin="anonymous")
     script(src='/javascripts/script.js')
   body
     div(class="container-fluid align-center")
-        h1 #{title}
+        a(class="nav-item nav-link" href="/")
+            h1 #{title}
         
         div(class="container main-header")
             nav(class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3")
@@ -27,11 +29,13 @@ html
                         li(class="nav-item")
                         a(class="nav-link text-dark") Admin
                     - if (authenticated > 0)
+                        li(class="navitem")
+                        a(class="nav-link text-dark" href="/users/" + custId) My Page
                         li(class="nav-item")
-                        a(class="nav-link text-dark" onclick="signOut()") Logout
+                        a(class="nav-link text-dark" href="/signout") Logout
         div#searchDiv(class="container expand" style="display: none;")
             input#searchInput(type="text")
-            button(class="btn btn-secondary" value="Search" onclick="Search()")
+            button(class="btn btn-secondary" onclick="Search()") Search
         div#resultDiv(class="container")
 
     block content

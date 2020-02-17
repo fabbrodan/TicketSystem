@@ -1,7 +1,3 @@
-function signOut() {
-    
-}
-
 function SearchDisplay() {
     if ($("#searchDiv").css("display") == "none") {
         $("#searchDiv").css("display", "block");

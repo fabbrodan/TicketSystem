@@ -127,10 +127,10 @@ namespace TicketSystemAPI.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public bool Login([FromBody] Customers customer)
+        public Customers Login([FromBody] Customers customer)
         {
 
-            bool authenticated = false;
+            Customers returnCust = null;
             PasswordHasher.PasswordHasher hasher = new PasswordHasher.PasswordHasher();
 
             using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
@@ -146,7 +146,8 @@ namespace TicketSystemAPI.Controllers
                     {
                         if (hasher.VerifyPassword(customer.Password, result.PasswordSalt, result.Password))
                         {
-                            authenticated = true;
+                            string getSql = "SELECT * FROM Customers WHERE LoginId = @LoginId;";
+                            returnCust = conn.Query<Customers>(getSql, new { customer.LoginId }).FirstOrDefault();
                         }
                     }
 
@@ -157,7 +158,7 @@ namespace TicketSystemAPI.Controllers
                 }
             }
 
-            return authenticated;
+            return returnCust;
         }
 
         [HttpDelete("{id}")]

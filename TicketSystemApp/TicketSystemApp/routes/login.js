@@ -7,7 +7,7 @@ router.get('/', function (req, res) {
     res.render('login', { title: 'Ticket System' });
 });
 
-router.post('/', function (req, res, next) {
+router.post('/', function (req, res) {
 
     request.post('http://localhost:5000/api/Customers/Login', {
         json: {
@@ -15,14 +15,18 @@ router.post('/', function (req, res, next) {
             password: req.body.password
         }
     }, (error, response, body) => {
-        if (!error && response.statusCode == 200) {
-            if (body) {
-                req.app.locals.typeOfAuthenticated = 1;
-                res.redirect('/users');
-            } else {
-                res.render('index', { title: "Ticket System" });
+            if (!error && response.statusCode == 200) {
+                if (body !== null) {
+                    req.app.locals.typeOfAuthenticated = 1;
+                    req.app.locals.customerId = body.customerId;
+                    res.redirect('users/'+body.customerId);
+                } else {
+                    res.render('index', { title: "Ticket System" });
+                }
+            } else if (response.statusCode == 204) {
+                res.render('login', { success: false });
             }
-        }
+
     });
 });
 

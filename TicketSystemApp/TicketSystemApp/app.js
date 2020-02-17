@@ -16,6 +16,8 @@ var app = express();
 
 app.locals.title = 'Ticket System';
 app.locals.typeOfAuthenticated = 0;
+app.locals.customerId = 0;
+app.locals.adminId = 0;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -68,6 +70,8 @@ app.use(function (err, req, res, next) {
 app.use(function (req, res, next) {
     res.locals.title = req.title;
     res.locals.typeOfAuthenticated = req.typeOfAuthenticated;
+    res.locals.customerId = req.customerId;
+    res.locals.adminId = req.adminId;
     next();
 });
 
