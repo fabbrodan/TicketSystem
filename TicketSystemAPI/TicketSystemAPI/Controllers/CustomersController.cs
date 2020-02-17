@@ -191,5 +191,35 @@ namespace TicketSystemAPI.Controllers
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
+
+        [HttpGet]
+        [Route("{id}/Tickets")]
+        public dynamic GetTickets(int id)
+        {
+            IEnumerable<dynamic> CustomerTickets = null;
+            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = @"SELECT cust.LoginId, a.ArtistName, v.VenueName, c.CalendarDate, ct.SoldDate, c.Cancelled, ct.TicketId
+                                    FROM Customers cust
+                                    INNER JOIN CustomerTickets ct ON ct.CustomerId = cust.CustomerId
+                                    INNER JOIN Tickets t ON ct.TicketId = t.TicketId
+                                    INNER JOIN Concerts c ON t.ConcertId = c.ConcertId
+                                    INNER JOIN Artists a ON c.ArtistId = a.ArtistId
+                                    INNER JOIN Venues v ON c.VenueId = v.VenueId
+                                    WHERE cust.CustomerId = @CustomerId;";
+
+                    CustomerTickets = conn.Query(sql, new { CustomerId = id });
+                }
+                catch (SqlException exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            }
+
+            return CustomerTickets;
+        }
     }
 }
