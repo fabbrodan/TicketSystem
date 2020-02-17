@@ -25,9 +25,9 @@ namespace TicketSystemAPI.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public bool Login([FromBody]Administrators admin)
+        public Administrators Login([FromBody]Administrators admin)
         {
-            var authenticated = false;
+            Administrators returnAdmin = null;
             PasswordHasher.PasswordHasher hasher = new PasswordHasher.PasswordHasher();
 
             using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
@@ -40,7 +40,8 @@ namespace TicketSystemAPI.Controllers
 
                     if (hasher.VerifyPassword(admin.Password, result.PasswordSalt, result.Password))
                     {
-                        authenticated = true;
+                        var getSql = "SELECT * FROM Administrators WHERE LoginId = @LoginId;"; ;
+                        returnAdmin = conn.Query<Administrators>(getSql, new { admin.LoginId }).FirstOrDefault();
                     }
                 }
                 catch (SqlException exc)
@@ -49,7 +50,7 @@ namespace TicketSystemAPI.Controllers
                 }
             }
 
-            return authenticated;
+            return returnAdmin;
         }
 
         [HttpPost]
