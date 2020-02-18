@@ -42,4 +42,23 @@ router.post('/login', function (req, res) {
         });
 });
 
+router.post('/concertAdd', function (req, res) {
+    var artist = req.body.artistName;
+    var venue = req.body.venueName;
+    var price = req.body.price;
+    var date = req.body.concertDate;
+    var time = req.body.concertTime;
+    var dateTime = date + "T" + time
+
+    console.log("Artist: " + artist + " Venue: " + venue + " Price: " + price + " DateTime: " + dateTime);
+});
+
+router.post('/artistAdd', function (req, res) {
+    console.log("adding artist");
+});
+
+router.post('/adminAdd', function (req, res) {
+    console.log("adding admin");
+});
+
 module.exports = router;

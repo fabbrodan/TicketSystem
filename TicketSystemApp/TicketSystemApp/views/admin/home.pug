@@ -6,16 +6,48 @@ block content
             div(class="col-lg-12 align-center")
                 h4#adminNameHeader
         div(class="row")
-            div(class="col-lg-4")
-                p Add Concert Section
-            div(class="col-lg-4")
-                p Add Artist Section
-            div(class="col-lg-4")
-                p Add Admin Section
+            div(class="col-lg-4 border")
+                h5(class="pt-1") Add Concert
+                form(method="POST" action="/admin/concertAdd")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="text" name="artistName" placeholder="Artist")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="text" name="venueName" placeholder="Venue")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="text" name="price" placeholder="Price")
+                    div(class="form-row pb-1")
+                        label(for="concertDate") Date:
+                            input(class="form-control" type="date" name="concertDate")
+                        label(for="concertTime") Time:
+                            input(class="form-control" type="time" value="18:00:00" name="concertTime")
+                    div(class="form-row pb-1")
+                        input(class="form-control btn btn-secondary" type="submit" value="Add")
+            div(class="col-lg-4 border")
+               h5(class="pt-1") Add Artist
+               form(method="POST" action="/admin/artistAdd")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="text" name="artistName" placeholder="Name")
+                    div(class="form-row pb-1")
+                        input(class="form-control btn btn-secondary" type="submit" value="Add")
+            div(class="col-lg-4 border")
+                h5(class="pt-1") Add Admin
+                form(method="POST" action="/admin/adminAdd")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="text" name="loginId" placeholder="Login ID")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="text" name="email" placeholder="E-Mail")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="password" name="password" placeholder="Password")
+                    div(class="form-row pb-1")
+                        input(class="form-control btn btn-secondary" type="submit" value="Add")
         
         script.
             var admin = !{admin};
             var adminObj = JSON.parse(admin);
             console.log(adminObj)
+            document.getElementById("adminNameHeader").innerText = "You are logged in as " + adminObj["loginId"];
 
-            document.getElementById("adminNameHeader").innerText = adminObj["loginId"];
+        script.
+            $("form").on('click', function() {
+                console.log("form clicked");
+                });
