@@ -1,0 +1,9 @@
+extends ../shared/layout
+
+block content
+    div(class="container")
+        
+        script.
+            var admin = !{admin};
+            var adminObj = JSON.parse(admin);
+            console.log(adminObj)

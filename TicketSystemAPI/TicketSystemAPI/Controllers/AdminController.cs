@@ -23,6 +23,27 @@ namespace TicketSystemAPI.Controllers
             _dbOptions = dbOptions;
         }
 
+        [HttpGet("{id}")]
+        public Administrators Get(int id)
+        {
+            Administrators returnAdmin = null;
+            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM Administrators WHERE AdminId = @adminId;";
+                    returnAdmin = conn.Query<Administrators>(sql, new { adminId = id }).FirstOrDefault();
+                }
+                catch (SqlException exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            }
+
+            return returnAdmin;
+        }
+
         [HttpPost]
         [Route("Login")]
         public Administrators Login([FromBody]Administrators admin)
@@ -37,7 +58,7 @@ namespace TicketSystemAPI.Controllers
                     conn.Open();
                     var sql = "SELECT Password, PasswordSalt FROM Administrators WHERE LoginId = @loginId;";
                     var result = conn.Query(sql, new { loginId = admin.LoginId }).FirstOrDefault();
-
+                    
                     if (hasher.VerifyPassword(admin.Password, result.PasswordSalt, result.Password))
                     {
                         var getSql = "SELECT * FROM Administrators WHERE LoginId = @LoginId;"; ;
