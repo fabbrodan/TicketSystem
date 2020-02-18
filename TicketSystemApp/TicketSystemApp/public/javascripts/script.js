@@ -7,6 +7,7 @@ function SearchDisplay() {
 }
 
 function Search() {
+
     var searchTerm = document.getElementById("searchInput").value;
 
     var xhr = new XMLHttpRequest();

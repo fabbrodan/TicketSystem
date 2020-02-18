@@ -249,7 +249,7 @@ CONSTRAINT [CHK_CenueCapacity] CHECK ([Capacity] > 0));
 BEGIN
 SET IDENTITY_INSERT [Venues] ON;
 INSERT INTO [Venues]
-(VenueId, VenueName, Capacity, Coordinates)
+(VenueId, VenueName, Capacity, Coordinates, City)
 SELECT VenueId, VenueName, Capacity, Coordinates, City
 FROM #venuesTmp;
 SET IDENTITY_INSERT [Venues] OFF;
