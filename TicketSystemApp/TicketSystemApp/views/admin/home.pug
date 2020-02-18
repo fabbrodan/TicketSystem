@@ -1,9 +1,21 @@
 extends ../shared/layout
 
 block content
-    div(class="container")
+    div#mainAdminContainer(class="container")
+        div(class="row")
+            div(class="col-lg-12 align-center")
+                h4#adminNameHeader
+        div(class="row")
+            div(class="col-lg-4")
+                p Add Concert Section
+            div(class="col-lg-4")
+                p Add Artist Section
+            div(class="col-lg-4")
+                p Add Admin Section
         
         script.
             var admin = !{admin};
             var adminObj = JSON.parse(admin);
             console.log(adminObj)
+
+            document.getElementById("adminNameHeader").innerText = adminObj["loginId"];

@@ -8,6 +8,7 @@ router.get('/:id', function (req, res) {
 
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
+        console.log("ready state: " + this.readyState);
         if (this.readyState == 4 && this.status == 200) {
 
             res.render('users', { customer: JSON.stringify(this.responseText) })
