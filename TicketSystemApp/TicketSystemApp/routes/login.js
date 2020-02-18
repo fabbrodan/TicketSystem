@@ -9,7 +9,7 @@ router.get('/', function (req, res) {
 
 router.post('/', function (req, res) {
 
-    request.post('http://localhost:5000/api/Customers/Login', {
+    request.post('http://127.0.0.10/api/Customers/Login', {
         json: {
             loginId: req.body.loginId,
             password: req.body.password

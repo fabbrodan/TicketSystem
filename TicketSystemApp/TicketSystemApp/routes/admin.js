@@ -9,7 +9,7 @@ router.get('/login', function (req, res) {
 
 router.post('/login', function (req, res) {
 
-    request.post("http://localhost:5000/api/Admin/Login", {
+    request.post("http://127.0.0.10/api/Admin/Login", {
         json: {
             loginId: req.body.loginId,
             password: req.body.password
