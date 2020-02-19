@@ -2,18 +2,39 @@ extends shared/layout
 
 block content
     div(class="container")
-        h1 User Login
-        form(method="POST" action="/login")
-            div(class="form-row pb-3")
-                input#loginId(type="text" placeholder="Username/Email" name="loginId")
-            div(class="form-row pb-3")
-                input#password(type="password" placeholder="Password" name="password")
-            div(class="form-row")
-                button(class="btn btn-secondary" type="submit") Login
+        div(class="row")
+            div(class="col-lg-5")
+                h1 User Login
+            div(class="col-lg-2")
+            div(class="col-lg-5")
+                h1 Sign Up
+        div(class="row")
+            div(class="col-lg-5 border")
+                form(class="pt-3" method="POST" action="/login")
+                    div(class="form-row pb-3")
+                        input#loginId(class="form-control" type="text" placeholder="Username" name="loginId")
+                    div(class="form-row pb-3")
+                        input#password(class="form-control" type="password" placeholder="Password" name="password")
+                    div(class="form-row")
+                        input(class="form-control btn btn-secondary" type="submit" value="Login")
+            div(class="col-lg-2")
+            div(class="col-lg-5 border")
+                form(class="pt-3" method="POST" action="/login/newUser")
+                    div(class="form-row pb-3")
+                        input(class="form-control" type="text" name="loginId" placeholder="Username")
+                    div(class="form-row pb-3")
+                        input(class="form-control" type="text" name="email" placeholder="Email")
+                    div(class="form-row pb-3")
+                        input(class="form-control" type="text" name="phone" placeholder="Phone Number")
+                    div(class="form-row pb-3")
+                        input(class="form-control" type="password" name="password" placeholder="Password")
+                    div(class="form-row pb-3")
+                        input(class="form-control btn btn-secondary" type="submit" value="Submit")
+        div(class="row pt-5")
+            div(class="col-lg-4")
+                h3 Are you an administrator? Click
+                    a(href="admin/login")  here!
 
-        div(class="container")
-            h3 Are you an administrator? Click
-                a(href="admin/login")  here!
 
     script(type="text/javascript").
         var success = !{success}

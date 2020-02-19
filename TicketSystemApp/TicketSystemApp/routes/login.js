@@ -11,7 +11,7 @@ router.post('/', function (req, res) {
 
     request.post('http://127.0.0.10/api/Customers/Login', {
         json: {
-            loginId: req.body.loginId,
+            loginName: req.body.loginId,
             password: req.body.password
         }
     }, (error, response, body) => {
@@ -28,6 +28,30 @@ router.post('/', function (req, res) {
             }
 
     });
+});
+
+router.post('/newUser', function (req, res) {
+
+    request.post('http://127.0.0.10/api/Customers/NewUser', {
+        json: {
+            LoginName: req.body.loginId,
+            Email: req.body.email,
+            PhoneNumber: req.body.phone,
+            Password: req.body.password
+        }
+    },
+        (error, response, body) => {
+            if (!error && response.statusCode == 200) {
+                if (body != null) {
+                    req.app.locals.typeOfAuthenticated = 1;
+                    req.app.locals.customerId = body.customerId;
+                    res.redirect('users/' + body.customerId);
+                }
+            }
+            else {
+                res.redirect('back');
+            }
+        });
 });
 
 module.exports = router;

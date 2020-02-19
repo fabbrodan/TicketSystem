@@ -56,13 +56,13 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    var sql = "SELECT Password, PasswordSalt FROM Administrators WHERE LoginId = @loginId;";
-                    var result = conn.Query(sql, new { loginId = admin.LoginId }).FirstOrDefault();
+                    var sql = "SELECT Password, PasswordSalt FROM Administrators WHERE LoginName = @loginName;";
+                    var result = conn.Query(sql, new { admin.LoginName }).FirstOrDefault();
                     
                     if (hasher.VerifyPassword(admin.Password, result.PasswordSalt, result.Password))
                     {
-                        var getSql = "SELECT * FROM Administrators WHERE LoginId = @LoginId;"; ;
-                        returnAdmin = conn.Query<Administrators>(getSql, new { admin.LoginId }).FirstOrDefault();
+                        var getSql = "SELECT * FROM Administrators WHERE LoginName = @LoginName;"; ;
+                        returnAdmin = conn.Query<Administrators>(getSql, new { admin.LoginName }).FirstOrDefault();
                     }
                 }
                 catch (SqlException exc)
@@ -79,6 +79,7 @@ namespace TicketSystemAPI.Controllers
         public Administrators NewAdmin([FromBody] Administrators admin)
         {
             Administrators newAdmin = admin;
+            Administrators returnAdmin = null;
             PasswordHasher.PasswordHasher hasher = new PasswordHasher.PasswordHasher();
             newAdmin.PasswordSalt = hasher.RandomSalt;
             newAdmin.Password = hasher.GenerateSaltedHash(admin.Password);
@@ -89,8 +90,8 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    var sql = "INSERT INTO Administrators (LoginId, Email, Password, PasswordSalt, RegisteredDate)" +
-                        "VALUES(@LoginId, @Email, @Password, @PasswordSalt, @RegisteredDate);";
+                    var sql = "INSERT INTO Administrators (LoginName, Email, Password, PasswordSalt, RegisteredDate)" +
+                        "VALUES(@LoginName, @Email, @Password, @PasswordSalt, @RegisteredDate);";
 
                     conn.Execute(sql, newAdmin);
                 }
@@ -98,8 +99,11 @@ namespace TicketSystemAPI.Controllers
                 {
                     Console.WriteLine(exc.Message);
                 }
+
+                var getSql = "SELECT * FROM Administrators WHERE LoginName = @loginName;";
+                returnAdmin = conn.Query<Administrators>(getSql, new { newAdmin.LoginName }).FirstOrDefault();
             }
-            return newAdmin;
+            return returnAdmin;
         }
     }
 }

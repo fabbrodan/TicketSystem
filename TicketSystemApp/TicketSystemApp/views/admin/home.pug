@@ -2,10 +2,10 @@ extends ../shared/layout
 
 block content
     div#mainAdminContainer(class="container")
-        div(class="row")
+        div(class="row pt-1")
             div(class="col-lg-12 align-center")
                 h4#adminNameHeader
-        div(class="row")
+        div(class="row pt-1")
             div(class="col-lg-4 border")
                 h5(class="pt-1") Add Concert
                 form(method="POST" action="/admin/concertAdd")
@@ -30,10 +30,20 @@ block content
                     div(class="form-row pb-1")
                         input(class="form-control btn btn-secondary" type="submit" value="Add")
             div(class="col-lg-4 border")
+                h5(class="pt-1") Add Venue
+                form(method="POST" action="/admin/venueAdd")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="text" name="venueName" placeholder="Venue Name")
+                    div(class="form-row pb-1")
+                        input(class="form-control" type="text" name="venueCity" placeholder="City")
+                    div(class="form-row pb-1")
+                        input(class="form-control btn btn-secondary" type="submit" value="Add")
+        div(class="row pt-1")
+            div(class="col-lg-4 border")
                 h5(class="pt-1") Add Admin
                 form(method="POST" action="/admin/adminAdd")
                     div(class="form-row pb-1")
-                        input(class="form-control" type="text" name="loginId" placeholder="Login ID")
+                        input(class="form-control" type="text" name="loginName" placeholder="Login ID")
                     div(class="form-row pb-1")
                         input(class="form-control" type="text" name="email" placeholder="E-Mail")
                     div(class="form-row pb-1")
@@ -41,13 +51,14 @@ block content
                     div(class="form-row pb-1")
                         input(class="form-control btn btn-secondary" type="submit" value="Add")
         
-        script.
+        script(type="text/javascript").
             var admin = !{admin};
-            var adminObj = JSON.parse(admin);
-            console.log(adminObj)
-            document.getElementById("adminNameHeader").innerText = "You are logged in as " + adminObj["loginId"];
-
-        script.
-            $("form-row").on('click', function() {
-                console.log("form clicked");
-                });
+            var venues = !{venues};
+            var artists = !{artists};
+            var adminObject = JSON.parse(admin);
+            var venuesObject = JSON.parse(venues);
+            var artistsObject = JSON.parse(artists);
+            console.log(adminObject);
+            console.log(venuesObject);
+            console.log(artistsObject);
+            console.log(adminObject); document.getElementById("adminNameHeader").innerText = "You are logged in as " + adminObject["loginName"];

@@ -36,20 +36,20 @@ DROP TABLE [Administrators];
 
 CREATE TABLE [Administrators] (
 [AdminId] int not null identity(1,1),
-[LoginId] nvarchar(50) not null,
+[LoginName] nvarchar(50) not null,
 [Email] nvarchar(100) null,
 [Password] nvarchar(max),
 [PasswordSalt] nvarchar(max),
 [RegisteredDate] datetime not null,
+[IsActive] bit default(1),
 CONSTRAINT [PK_Administrators] PRIMARY KEY CLUSTERED ([AdminId]),
-CONSTRAINT [UK1_Administrators] UNIQUE ([LoginId]),
-CONSTRAINT [UK2_Administrators] UNIQUE ([Email]));
+CONSTRAINT [UK1_Administrators] UNIQUE ([Email]));
 
 BEGIN
 SET IDENTITY_INSERT [Administrators] ON;
 INSERT INTO [Administrators]
-(AdminId, LoginId, Email, Password, PasswordSalt, RegisteredDate)
-SELECT AdminId, LoginId, Email, Password, PasswordSalt, RegisteredDate
+(AdminId, LoginName, Email, Password, PasswordSalt, RegisteredDate)
+SELECT AdminId, LoginName, Email, Password, PasswordSalt, RegisteredDate
 FROM #adminTmp;
 SET IDENTITY_INSERT [Administrators] OFF;
 END
@@ -60,14 +60,14 @@ ELSE
 BEGIN
 CREATE TABLE [Administrators] (
 [AdminId] int not null identity(1,1),
-[LoginId] nvarchar(50) not null,
+[LoginName] nvarchar(50) not null,
 [Email] nvarchar(100) null,
 [Password] nvarchar(max),
 [PasswordSalt] nvarchar(max),
 [RegisteredDate] datetime not null,
+[IsActive] bit default(1),
 CONSTRAINT [PK_Administrators] PRIMARY KEY CLUSTERED ([AdminId]),
-CONSTRAINT [UK1_Administrators] UNIQUE ([LoginId]),
-CONSTRAINT [UK2_Administrators] UNIQUE ([Email]));
+CONSTRAINT [UK1_Administrators] UNIQUE ([Email]));
 END
 
 -- Setup of Customers table
@@ -81,22 +81,22 @@ DROP TABLE [Customers];
 
 CREATE TABLE [Customers] (
 [CustomerId] int not null identity(1,1),
-[LoginId] nvarchar(50) not null,
+[LoginName] nvarchar(50) not null,
 [Email] nvarchar(100) not null,
 [PhoneNumber] nvarchar(15) null,
 [Password] nvarchar(max) not null,
 [PasswordSalt] nvarchar(max) not null,
 [RegisteredDate] datetime not null,
-[Currency] numeric(10,2) default(0.00)
+[Currency] numeric(10,2) default(0.00),
+[IsActive] bit default(1)
 CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([CustomerId]),
-CONSTRAINT [UK1_Customers] UNIQUE ([LoginId]),
-CONSTRAINT [UK2_Customers] UNIQUE ([Email]));
+CONSTRAINT [UK1_Customers] UNIQUE ([Email]));
 
 BEGIN
 SET IDENTITY_INSERT [Customers] ON;
 INSERT INTO [Customers]
-(CustomerId, LoginId, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate, Currency)
-SELECT CustomerId, LoginId, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate, Currency
+(CustomerId, LoginName, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate, Currency)
+SELECT CustomerId, LoginName, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate, Currency
 FROM #custTmp;
 SET IDENTITY_INSERT [Customers] OFF;
 END
@@ -114,9 +114,9 @@ CREATE TABLE [Customers] (
 [PasswordSalt] nvarchar(max) not null,
 [RegisteredDate] datetime not null,
 [Currency] numeric(10,2) default(0.00),
+[IsActive] bit default(1),
 CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([CustomerId]),
-CONSTRAINT [UK1_Customers] UNIQUE ([LoginId]),
-CONSTRAINT [UK2_Customers] UNIQUE ([Email]));
+CONSTRAINT [UK1_Customers] UNIQUE ([Email]));
 END
 
 -- Setup of Tickets table
@@ -365,3 +365,10 @@ ALTER TABLE [Coupons]
 ADD CONSTRAINT [FK1_Coupons]
 FOREIGN KEY ([TicketId])
 REFERENCES [Tickets] ([TicketId]);
+
+-- Indexes
+CREATE NONCLUSTERED INDEX [NC_IX_LoginId_Customers] ON [Customers] ([LoginName])
+WHERE [IsActive] = 1;
+
+CREATE NONCLUSTERED INDEX [NC_IX_LoginName_Administrators] ON [Administrators] ([LoginName])
+WHERE [IsActive] = 1;

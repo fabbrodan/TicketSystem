@@ -52,8 +52,10 @@ namespace TicketSystemAPI.Controllers
 
         
         [HttpPost]
-        public void Post([FromBody] Venues venue)
+        public Venues Post([FromBody] Venues venue)
         {
+            Venues returnVenue = null;
+
             using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
             {
                 try
@@ -70,12 +72,14 @@ namespace TicketSystemAPI.Controllers
 
                 string selectSql = "SELECT * FROM Venues WHERE VenueName = @VenueName;";
                 Venues indexVenue = conn.Query<Venues>(selectSql, venue).FirstOrDefault();
-                
+                returnVenue = indexVenue;
                 if(indexVenue != null)
                 {
                     _client.IndexDocument(indexVenue);
                 }
             }
+
+            return returnVenue;
         }
 
         

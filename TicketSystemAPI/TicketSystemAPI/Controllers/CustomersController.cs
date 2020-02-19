@@ -88,6 +88,7 @@ namespace TicketSystemAPI.Controllers
         public Customers NewUser([FromBody] Customers customer)
         {
             Customers newCustomer = customer;
+            Customers returnCustomer = null;
 
             PasswordHasher.PasswordHasher hasher = new PasswordHasher.PasswordHasher();
 
@@ -100,13 +101,13 @@ namespace TicketSystemAPI.Controllers
                 {
                     conn.Open();
 
-                    string sql = "INSERT INTO Customers (LoginId, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate)" +
-                        "VALUES(@loginId, @email, @phoneNumber, @password, @passwordSalt, @registeredDate)";
+                    string sql = "INSERT INTO Customers (LoginName, Email, PhoneNumber, Password, PasswordSalt, RegisteredDate)" +
+                        "VALUES(@loginName, @email, @phoneNumber, @password, @passwordSalt, @registeredDate)";
 
                     conn.Execute(sql,
                         new
                         {
-                            loginId = newCustomer.LoginId,
+                            loginName = newCustomer.LoginName,
                             email = newCustomer.Email,
                             phoneNumber = newCustomer.PhoneNumber,
                             password = newCustomer.Password,
@@ -118,11 +119,14 @@ namespace TicketSystemAPI.Controllers
                 {
                     Console.WriteLine(exc.Message);
                 }
+
+                string getCustomer = "SELECT * FROM Customers WHERE LoginName = @LoginName;";
+                returnCustomer = conn.Query<Customers>(getCustomer, new { LoginName = newCustomer.LoginName }).FirstOrDefault();
             }
 
             _client.IndexDocument<Customers>(newCustomer);
 
-            return newCustomer;
+            return returnCustomer;
         }
 
         [HttpPost]
@@ -139,15 +143,15 @@ namespace TicketSystemAPI.Controllers
                 {
                     conn.Open();
 
-                    string sql = "SELECT Password, PasswordSalt FROM Customers WHERE LoginId = @loginId;";
-                    var result = conn.Query(sql, new { loginId = customer.LoginId }).FirstOrDefault();
+                    string sql = "SELECT Password, PasswordSalt FROM Customers WHERE LoginName = @LoginName;";
+                    var result = conn.Query(sql, new { customer.LoginName }).FirstOrDefault();
                     
                     if (result != null)
                     {
                         if (hasher.VerifyPassword(customer.Password, result.PasswordSalt, result.Password))
                         {
-                            string getSql = "SELECT * FROM Customers WHERE LoginId = @LoginId;";
-                            returnCust = conn.Query<Customers>(getSql, new { customer.LoginId }).FirstOrDefault();
+                            string getSql = "SELECT * FROM Customers WHERE LoginName = @LoginName;";
+                            returnCust = conn.Query<Customers>(getSql, new { customer.LoginName }).FirstOrDefault();
                         }
                     }
 
@@ -203,7 +207,7 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = @"SELECT cust.LoginId, a.ArtistName, v.VenueName, c.CalendarDate, ct.SoldDate, c.Cancelled, ct.TicketId
+                    string sql = @"SELECT cust.LoginName, a.ArtistName, v.VenueName, c.CalendarDate, ct.SoldDate, c.Cancelled, ct.TicketId
                                     FROM Customers cust
                                     INNER JOIN CustomerTickets ct ON ct.CustomerId = cust.CustomerId
                                     INNER JOIN Tickets t ON ct.TicketId = t.TicketId

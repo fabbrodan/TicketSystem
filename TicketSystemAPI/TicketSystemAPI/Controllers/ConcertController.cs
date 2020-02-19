@@ -67,8 +67,10 @@ namespace TicketSystemAPI.Controllers
         }
 
         [HttpPost]
-        public void Post([FromBody] Concerts concert)
+        public Concerts Post([FromBody] Concerts concert)
         {
+            Concerts returnConcert = null;
+
             using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
             {
                 try
@@ -85,12 +87,15 @@ namespace TicketSystemAPI.Controllers
 
                 string selectSql = "SELECT * FROM Concerts WHERE ArtistId = @ArtistId AND VenueId = @VenueId AND CalendarDate = @CalendarDate;";
                 Concerts indexConcert = conn.Query<Concerts>(selectSql, concert).FirstOrDefault();
+                returnConcert = indexConcert;
 
                 if (indexConcert != null)
                 {
                     _client.IndexDocument(indexConcert);
                 }
             }
+
+            return returnConcert;
         }
 
         [HttpDelete("{id}")]

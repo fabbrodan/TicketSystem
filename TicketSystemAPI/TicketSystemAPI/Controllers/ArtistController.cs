@@ -47,8 +47,10 @@ namespace TicketSystemAPI.Controllers
         }
 
         [HttpPost]
-        public void Post([FromBody] Artists artist)
+        public Artists Post([FromBody] Artists artist)
         {
+            Artists indexArtist = null;
+
             using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
             {
                 try
@@ -63,13 +65,15 @@ namespace TicketSystemAPI.Controllers
                 }
 
                 string selectSql = "SELECT * FROM Artists WHERE ArtistName = @ArtistName;";
-                Artists indexArtist = conn.Query<Artists>(selectSql, artist).FirstOrDefault();
+                indexArtist = conn.Query<Artists>(selectSql, artist).FirstOrDefault();
 
                 if (indexArtist != null)
                 {
                     _client.IndexDocument(indexArtist);
                 }
             }
+
+            return indexArtist;
         }
 
         [HttpDelete("{id}")]
