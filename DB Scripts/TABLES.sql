@@ -244,7 +244,8 @@ CREATE TABLE [Venues] (
 [Coordinates] nvarchar(150) null,
 [City] nvarchar(100) null,
 CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]),
-CONSTRAINT [CHK_CenueCapacity] CHECK ([Capacity] > 0));
+CONSTRAINT [UK1_Venues] UNIQUE ([VenueName]),
+CONSTRAINT [CHK_VenueCapacity] CHECK ([Capacity] > 0));
 
 BEGIN
 SET IDENTITY_INSERT [Venues] ON;
@@ -265,7 +266,8 @@ CREATE TABLE [Venues] (
 [Capacity] int null,
 [Coordinates] nvarchar(150) null,
 CONSTRAINT [PK_Venues] PRIMARY KEY CLUSTERED ([VenueId]),
-CONSTRAINT [CHK_CenueCapacity] CHECK ([Capacity] > 0));
+CONSTRAINT [UK1_Venues] UNIQUE ([VenueName]),
+CONSTRAINT [CHK_VenueCapacity] CHECK ([Capacity] > 0));
 END
 
 -- Setup of CustomerTickets table
@@ -372,3 +374,15 @@ WHERE [IsActive] = 1;
 
 CREATE NONCLUSTERED INDEX [NC_IX_LoginName_Administrators] ON [Administrators] ([LoginName])
 WHERE [IsActive] = 1;
+
+-- Add Default admin if not exists login
+IF (SELECT COUNT(*) FROM Administrators) = 0
+BEGIN
+INSERT INTO Administrators
+(LoginName, Email, Password, PasswordSalt)
+VALUES(
+'admin',
+'admin@admin.com',
+'KXq?l?K{??.??r??{?x?y??];?0??????[j????U?3???J?T?????????-k',
+'jM.?^?1|?=V??,4iB???0r? ?.?K');
+END

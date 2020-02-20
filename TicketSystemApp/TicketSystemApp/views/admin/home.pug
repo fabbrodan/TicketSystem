@@ -13,12 +13,12 @@ block content
                         select(class="form-control" name="artistName")
                             option(value="", disabled=true, selected=true) Artist
                             each artist in artists
-                                option=artist["artistName"]
+                                option(value=artist["artistId"])=artist["artistName"]
                     div(class="form-row pb-1")
                         select(class="form-control" name="venueName")
                             option(value="", disabled=true, selected=true) Venue
                             each venue in venues
-                                option=venue["venueName"]
+                                option(value=venue["venueId"])=venue["venueName"]
                     div(class="form-row pb-1")
                         input(class="form-control" type="text" name="price" placeholder="Price")
                     div(class="form-row pb-1")
@@ -43,6 +43,8 @@ block content
                     div(class="form-row pb-1")
                         input(class="form-control" type="text" name="venueCity" placeholder="City")
                     div(class="form-row pb-1")
+                        input(class="form-control" type="number" name="venueCapacity" placeholder="Capacity")
+                    div(class="form-row pb-1")
                         input(class="form-control btn btn-secondary" type="submit" value="Add")
         div(class="row pt-1")
             div(class="col-lg-4 border")
@@ -61,7 +63,4 @@ block content
             var admin = !{JSON.stringify(admin)};
             var venues = !{JSON.stringify(venues)};
             var artists = !{JSON.stringify(artists)};
-            console.log(admin);
-            console.log(venues);
-            console.log(artists);
             document.getElementById("adminNameHeader").innerText = "You are logged in as " + admin["loginName"];

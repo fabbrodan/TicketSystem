@@ -2,11 +2,12 @@ extends ../shared/layout
 
 block content
     div(class="container")
-        h1 Admin Login
-        form(method="POST")
-            div(class="form-row pb-3")
-                input#loginId(type="text" placeholder="Username/Email" name="loginId")
-            div(class="form-row pb-3")
-                input#password(type="password" placeholder="Password" name="password")
-            div(class="form-row")
-                button(class="btn btn-secondary" type="submit") Login
+        div(class="col-lg-4 border")
+            h1(class="pt-1") Admin Login
+            form(method="POST")
+                div(class="form-row pb-3")
+                    input#loginId(class="form-control" type="text" placeholder="Username/Email" name="loginId")
+                div(class="form-row pb-3")
+                    input#password(class="form-control" type="password" placeholder="Password" name="password")
+                div(class="form-row pb-3")
+                    button(class="form-control btn btn-secondary" type="submit") Login

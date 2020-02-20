@@ -14,5 +14,6 @@ namespace TicketSystemAPI.Models
 
         public bool Cancelled { get; set; }
         public decimal Price { get; set; }
+        public int TicketsLeft { get; set; }
     }
 }

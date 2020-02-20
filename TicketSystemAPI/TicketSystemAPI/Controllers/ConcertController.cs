@@ -22,7 +22,10 @@ namespace TicketSystemAPI.Controllers
         public ConcertController(IOptions<DbOptions> dbOptions, IOptions<ElasticOptions> elasticOptions)
         {
             _dbOptions = dbOptions;
-            _client = new ElasticClient(new ConnectionSettings(new Uri(elasticOptions.Value.ClusterUrl)).DefaultMappingFor<Concerts>(m => m.IndexName("concerts")));
+            _client = new ElasticClient(new ConnectionSettings(
+                new Uri(elasticOptions.Value.ClusterUrl))
+                .DefaultMappingFor<Concerts>(m => m.IndexName("concerts"))
+                .DefaultMappingFor<IndexObject>(m => m.IndexName("mainindex")));
         }
 
         [HttpGet]
@@ -92,6 +95,11 @@ namespace TicketSystemAPI.Controllers
                 if (indexConcert != null)
                 {
                     _client.IndexDocument(indexConcert);
+
+                    string mainIndexSql = "SELECT * FROM ConcertIndexView WHERE ConcertId = @concertId;";
+                    IndexObject mainIndex = conn.Query<IndexObject>(mainIndexSql, new { indexConcert.ConcertId }).FirstOrDefault();
+
+                    _client.IndexDocument(mainIndex);
                 }
             }
 

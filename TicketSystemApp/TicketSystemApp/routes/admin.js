@@ -19,19 +19,16 @@ router.get('/home/:id', function (req, res) {
     var artists;
 
     GetAdmin();
-
     setTimeout(() => {
-        console.log(admin);
     }, 1000);
+
     GetVenues();
-
     setTimeout(() => {
-        console.log(venues);
     }, 1000);
-    GetArtists();
 
+
+    GetArtists();
     setTimeout(() => {
-        console.log(artists);
     }, 1000);
 
     res.render('admin/home', {
@@ -108,18 +105,40 @@ router.post('/login', function (req, res) {
                     res.redirect('back');
                 }
             }
+            else {
+                res.redirect('back');
+            }
         });
 });
 
 router.post('/concertAdd', function (req, res) {
-    var artist = req.body.artistName;
-    var venue = req.body.venueName;
-    var price = req.body.price;
+    var artist = parseInt(req.body.artistName);
+    var venue = parseInt(req.body.venueName);
+    var price = parseFloat(req.body.price);
     var date = req.body.concertDate;
     var time = req.body.concertTime;
     var dateTime = date + "T" + time
 
-    console.log("Artist: " + artist + " Venue: " + venue + " Price: " + price + " DateTime: " + dateTime);
+    request.post("http://127.0.0.10/api/Concert", {
+        json: {
+            ArtistId: artist,
+            VenueId: venue,
+            CalendarDate: dateTime,
+            Price: price
+        }
+    }, (error, response, body) => {
+            if (!error && response.statusCode == 200) {
+                if (body != null) {
+                    res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId)
+                }
+                else {
+                    res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId)
+                }
+            }
+            else {
+                res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId)
+            }
+    });
 });
 
 router.post('/artistAdd', function (req, res) {
@@ -129,17 +148,17 @@ router.post('/artistAdd', function (req, res) {
     }, (error, response, body) => {
             if (!error && response.statusCode == 200) {
                 console.log(body);
-                res.redirect('back');
+                res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
             }
             else {
-                res.redirect('back');
+                res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
             }
     });
 });
 
 router.post('/adminAdd', function (req, res) {
 
-    request.post("http://127.0.0.10/api/Admin", {
+    request.post("http://127.0.0.10/api/Admin/NewAdmin", {
         json: {
             LoginName: req.body.loginName,
             Email: req.body.email,
@@ -147,10 +166,10 @@ router.post('/adminAdd', function (req, res) {
         }
     }, (error, response, body) => {
         if (error || response.statusCode != 200) {
-            console.log("ooops");
+            console.log(error);
         }
     });
-    res.redirect('back');
+    res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
 
 });
 
@@ -159,19 +178,22 @@ router.post('/venueAdd', function (req, res) {
     request.post("http://127.0.0.10/api/Venue", {
         json: {
             VenueName: req.body.venueName,
-            City: req.body.venueCity
+            City: req.body.venueCity,
+            Capacity: parseInt(req.body.venueCapacity)
         }
     }, (error, response, body) => {
-        if (!error && response.statusCode == 200) {
-            if (body != null) {
-                res.redirect('back');
+            if (!error && response.statusCode == 200) {
+                if (body != null) {
+                    res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
+                }
+                else {
+                    res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
+                }
+            } else {
+                res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
             }
-            else {
-                console.log("ooops");
-                res.redirect('back');
-            }
-        }
     });
+
 
 
 });
