@@ -120,11 +120,11 @@ namespace TicketSystemAPI.Controllers
                     Console.WriteLine(exc.Message);
                 }
 
-                string getCustomer = "SELECT * FROM Customers WHERE LoginName = @LoginName;";
-                returnCustomer = conn.Query<Customers>(getCustomer, new { LoginName = newCustomer.LoginName }).FirstOrDefault();
+                string getCustomer = "SELECT * FROM Customers WHERE LoginName = @LoginName AND Email = @Email;";
+                returnCustomer = conn.Query<Customers>(getCustomer, new { LoginName = newCustomer.LoginName, Email = newCustomer.Email }).FirstOrDefault();
             }
 
-            _client.IndexDocument<Customers>(newCustomer);
+            _client.IndexDocument<Customers>(returnCustomer);
 
             return returnCustomer;
         }
@@ -143,15 +143,15 @@ namespace TicketSystemAPI.Controllers
                 {
                     conn.Open();
 
-                    string sql = "SELECT Password, PasswordSalt FROM Customers WHERE LoginName = @LoginName;";
-                    var result = conn.Query(sql, new { customer.LoginName }).FirstOrDefault();
+                    string sql = "SELECT Password, PasswordSalt FROM Customers WHERE Email = @Email AND IsActive = 1;";
+                    var result = conn.Query(sql, new { customer.Email }).FirstOrDefault();
                     
                     if (result != null)
                     {
                         if (hasher.VerifyPassword(customer.Password, result.PasswordSalt, result.Password))
                         {
-                            string getSql = "SELECT * FROM Customers WHERE LoginName = @LoginName;";
-                            returnCust = conn.Query<Customers>(getSql, new { customer.LoginName }).FirstOrDefault();
+                            string getSql = "SELECT * FROM Customers WHERE Email = @Email AND IsActive = 1;";
+                            returnCust = conn.Query<Customers>(getSql, new { customer.Email }).FirstOrDefault();
                         }
                     }
 

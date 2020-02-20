@@ -37,7 +37,7 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    var customers = await conn.QueryAsync<Customers>("SELECT * FROM Customers;");
+                    var customers = await conn.QueryAsync<Customers>("SELECT * FROM Customers WHERE IsActive = 1;");
                     await _client.BulkAsync(request => request
                     .Index("customers")
                     .IndexMany<Customers>(customers));

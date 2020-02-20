@@ -11,7 +11,7 @@ router.post('/', function (req, res) {
 
     request.post('http://127.0.0.10/api/Customers/Login', {
         json: {
-            loginName: req.body.loginId,
+            Email: req.body.email,
             password: req.body.password
         }
     }, (error, response, body) => {
@@ -19,7 +19,7 @@ router.post('/', function (req, res) {
                 if (body !== null) {
                     req.app.locals.typeOfAuthenticated = 1;
                     req.app.locals.customerId = body.customerId;
-                    res.redirect('users/'+body.customerId);
+                    res.redirect('/users/'+body.customerId);
                 } else {
                     res.render('index', { title: "Ticket System" });
                 }
@@ -45,7 +45,7 @@ router.post('/newUser', function (req, res) {
                 if (body != null) {
                     req.app.locals.typeOfAuthenticated = 1;
                     req.app.locals.customerId = body.customerId;
-                    res.redirect('users/' + body.customerId);
+                    res.redirect('/users/' + body.customerId);
                 }
             }
             else {
