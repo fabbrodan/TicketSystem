@@ -129,7 +129,7 @@ namespace TicketSystemAPI.Controllers
             {
                 try
                 {
-                    string sql = @"SELECT * FROM ConcertIndexViews;";
+                    string sql = @"SELECT * FROM ConcertIndexView;";
                     conn.Open();
                     IEnumerable<IndexObject>indexObjs = await conn.QueryAsync<IndexObject>(sql);
 

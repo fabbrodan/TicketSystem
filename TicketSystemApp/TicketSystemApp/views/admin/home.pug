@@ -58,6 +58,12 @@ block content
                         input(class="form-control" type="password" name="password" placeholder="Password")
                     div(class="form-row pb-1")
                         input(class="form-control btn btn-secondary" type="submit" value="Add")
+            div(class="col-lg-4 border")
+                h5(class="pt-1") Re-Index Searches
+                form(method="POST" action="/admin/reindex")
+                    div(class="form-row pb-1")
+                        input(class="form-control btn btn-secondary" type="submit" value="Start")
+                h3(class="font-weight-bold") Note that depending on the amount of data, this operation can take a long time!
         
         script(type="text/javascript").
             var admin = !{JSON.stringify(admin)};

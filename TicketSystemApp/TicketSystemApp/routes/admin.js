@@ -198,4 +198,17 @@ router.post('/venueAdd', function (req, res) {
 
 });
 
+router.post('/reindex', function (req, res) {
+
+    request.post("http://127.0.0.10/api/Index/Index",
+        (error, response, body) => {
+            if (!error && response.statusCode == 200) {
+                res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
+            }
+            else {
+                res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId)
+            }
+        });
+})
+
 module.exports = router;
