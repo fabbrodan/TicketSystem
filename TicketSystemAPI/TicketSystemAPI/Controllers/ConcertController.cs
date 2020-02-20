@@ -179,10 +179,13 @@ namespace TicketSystemAPI.Controllers
                     string selectIndexSql = "SELECT * FROM ConcertIndexView WHERE ConcertId = @ConcertId;";
                     IndexObject indexObject = conn.Query<IndexObject>(selectIndexSql, new { indexConcert.ConcertId }).FirstOrDefault();
 
+                    string selectCustomerSql = "SELECT * FROM Customers WHERE CustomerId = @CustomerId;";
+                    Customers indexCustomer = conn.Query<Customers>(selectCustomerSql, new { customer.CustomerId }).FirstOrDefault();
+
                     if (indexConcert != null)
                     {
                         _client.IndexDocument<Concerts>(indexConcert);
-                        _client.IndexDocument<Customers>(customer);
+                        _client.IndexDocument<Customers>(indexCustomer);
                         _client.IndexDocument<IndexObject>(indexObject);
                     }
                 }

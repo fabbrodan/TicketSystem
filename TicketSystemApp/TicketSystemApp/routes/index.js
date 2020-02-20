@@ -39,4 +39,22 @@ router.post('/search', function (req, res) {
 
 });
 
+router.post('/buy', function (req, res) {
+
+    if (req.app.locals.customerId == 0) {
+        res.render('search', { signedIn: false });
+        return;
+    }
+
+    request.post("http://127.0.0.10/api/Concert/purchase/" + req.body.concertId, {
+        json: {
+            customerId: req.app.locals.customerId
+        }
+    }, (error, response, body) => {
+        if (!error && response.statusCode == 200) {
+            res.render('search');
+        }
+    });
+});
+
 module.exports = router;

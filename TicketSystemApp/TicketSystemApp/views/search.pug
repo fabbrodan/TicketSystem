@@ -5,19 +5,51 @@ block content
         h1 Search
 
         div#searchDiv(class="align-center")
-            form(method="POST" action="/search")
-                div(class="form-row")
+            form(class="pb-2 border-bottom" method="POST" action="/search")
+                div(class="form-row pb-3")
                     input(class="form-control" type="text" name="searchTerm")
                 div(class="form-row")
                     input(class="form-control btn btn-secondary" type="submit" value="Search")
 
-        div#resultDiv
-        - if (typeof(results) !== 'undefined')
-            for r, i in results
-                div(class="container")
-                    p=results[i]["artistName"]
-                    p=results[i]["city"]
+        div#resultDiv(class="container")
+            - if (typeof(results) !== 'undefined')
+                for r, i in results
+                    div(class="row pt-1")
+                        div(class="col-lg-12 border-bottom")
+                            div(class="row")
+                                div(class="col-lg-2")
+                                    label(class="font-weight-bold" for="artist") Artist:
+                                    p(name="artist")=results[i]["artistName"]
+                                div(class="col-lg-2")
+                                    label(class="font-weight-bold" for="city") City:
+                                    p(name="City")=results[i]["city"]
+                                div(class="col-lg-2")
+                                    label(class="font-weight-bold" for="venue") Venue:
+                                    p(name="venue")=results[i]["venueName"]
+                                div(class="col-lg-2")
+                                    label(class="font-weight-bold" for="date") Date:
+                                    p(name="date")=results[i]["concertDate"].substring(0, 10) + " " + results[i]["concertDate"].substring(11, 16)
+                                div(class="col-lg-2")
+                                    label(class="font-weight-bold" for="price") Price:
+                                    p(name="price")=results[i]["concertPrice"] + ".00 SEK"
+                                div(class="col-lg-2")
+                                    label(class="font-weight-bold" for="ticketsLeft") Tickets Left:
+                                    p(name="ticketsLeft")=results[i]["ticketsLeft"] + "/" + results[i]["venueCapacity"]
+                            div(class="row border-bottom border-dark pb-2")
+                                div(class="col-lg-1")
+                                    form(method="POST" action="/buy")
+                                        div(class="form-row")
+                                            - var id = results[i]["concertId"]
+                                            input(type="hidden" value=id name="concertId")
+                                            input(class="form-control btn btn-secondary" type="submit" value="Buy")
 
     script.
         var results = !{JSON.stringify(results)}
         console.log(results);
+
+        var signedIn = #{signedIn};
+
+        $(document).ready(function() {
+            if (typeof(signedIn) !== 'undefined' && !signedIn) {
+                alert("Please sign in before buying anything");
+        }});
