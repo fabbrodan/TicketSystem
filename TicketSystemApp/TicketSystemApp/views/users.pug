@@ -3,24 +3,61 @@ extends shared/layout
 block content
 
     div#mainUserDiv(class="container")
-    
+        div(class="row")
+            div(class="col-lg-5")
+                h3(class="pt-1") Your Details:
+                    div(class="row")
+                        div(class="col-lg-6")
+                            h4 Username:
+                        div(class="col-lg-6")
+                            h5#userName
+                    div(class="row")
+                        div(class="col-lg-6")
+                            h4 Email:
+                        div(class="col-lg-6")
+                            h5#userEmail
+                    div(class="row")
+                        div(class="col-lg-6")
+                            h4 Pesetas:
+                        div(class="col-lg-6")
+                            h5#userCurrency
+            div(class="col-lg-2")
+            div(class="col-lg-5")
+                h3(class="pt-1") Your Orders:
+                    each t, i in customerTickets
+                        div(class="row")
+                            div(class="col-lg-6")
+                                h5#artistName=customerTickets[i]["ArtistName"]
+                            div(class="col-lg-6")
+                                h5#venueName=customerTickets[i]["VenueName"]
+                        div(class="row")
+                            div(class="col-lg-2")
+                                h6 Date:
+                            div(class="col-lg-4")
+                                h6#concertDate=customerTickets[i]["CalendarDate"].substring(0,10) + ' ' + customerTickets[i]["CalendarDate"].substring(11, 16)
+                            div(class="col-lg-2")
+                                h6 Purchased:
+                            div(class="col-lg-4")
+                                h6#purchaseDate=customerTickets[i]["SoldDate"].substring(0,10) + ' ' + customerTickets[i]["SoldDate"].substring(11, 16)
+                        div(class="row border-bottom")
+                            div(class="col-lg-6")
+                                h5 Ticket Number:
+                            div(class="col-lg-6")
+                                h5#ticketNumber=customerTickets[i]["TicketId"]
+        div(class="row")
+            div(class="col-lg-5")
+                h3 Add Pesetas
+                form(method="POST" action="addFunds")
+                    div(class="form-row")
+                        input(class="btn btn-secondary" type="submit" value="Add")
+                        input(class="ml-2" type="number" placeholder="Amount" name="amount")
+                p If you don't see an updated number immediately, refresh the page in a few seconds
+
     script.
         var customer = !{customer};
         var customerObj = JSON.parse(customer);
-        console.log(customerObj);
+        var customerTickets = !{JSON.stringify(customerTickets)};
 
-        var pNameNode = document.createElement("p");
-        var tNameNode = document.createTextNode("Username: " + customerObj["loginName"]);
-        pNameNode.appendChild(tNameNode);
-        
-        var pEmailNode = document.createElement("p");
-        var tEmailNode = document.createTextNode("Email: " + customerObj["email"]);
-        pEmailNode.appendChild(tEmailNode);
-
-        var pCurrencyNode = document.createElement("p");
-        var tCurrencyNode = document.createTextNode("Pesetas: " + customerObj["currency"]);
-        pCurrencyNode.appendChild(tCurrencyNode);
-
-        document.getElementById("mainUserDiv").appendChild(pNameNode);
-        document.getElementById("mainUserDiv").appendChild(pEmailNode);
-        document.getElementById("mainUserDiv").appendChild(pCurrencyNode);
+        document.getElementById("userName").innerText = customerObj["loginName"];
+        document.getElementById("userEmail").innerText = customerObj["email"];
+        document.getElementById("userCurrency").innerText = customerObj["currency"];

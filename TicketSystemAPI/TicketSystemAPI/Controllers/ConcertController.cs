@@ -25,7 +25,8 @@ namespace TicketSystemAPI.Controllers
             _client = new ElasticClient(new ConnectionSettings(
                 new Uri(elasticOptions.Value.ClusterUrl))
                 .DefaultMappingFor<Concerts>(m => m.IndexName("concerts"))
-                .DefaultMappingFor<IndexObject>(m => m.IndexName("mainindex")));
+                .DefaultMappingFor<IndexObject>(m => m.IndexName("mainindex"))
+                .DefaultMappingFor<Customers>(m => m.IndexName("customers")));
         }
 
         [HttpGet]
@@ -173,11 +174,16 @@ namespace TicketSystemAPI.Controllers
                     }
 
                     string selectSql = "SELECT * FROM Concerts WHERE ArtistId = @ArtistId AND VenueId = @VenueId AND CalendarDate = @CalendarDate;";
-                    Concerts indexConcert = conn.Query(selectSql, concert).FirstOrDefault();
+                    Concerts indexConcert = conn.Query<Concerts>(selectSql, concert).FirstOrDefault();
+
+                    string selectIndexSql = "SELECT * FROM ConcertIndexView WHERE ConcertId = @ConcertId;";
+                    IndexObject indexObject = conn.Query<IndexObject>(selectIndexSql, new { indexConcert.ConcertId }).FirstOrDefault();
 
                     if (indexConcert != null)
                     {
-                        _client.IndexDocument(indexConcert);
+                        _client.IndexDocument<Concerts>(indexConcert);
+                        _client.IndexDocument<Customers>(customer);
+                        _client.IndexDocument<IndexObject>(indexObject);
                     }
                 }
 

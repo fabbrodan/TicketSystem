@@ -1,0 +1,23 @@
+extends shared/layout
+
+block content
+    div(class="container")
+        h1 Search
+
+        div#searchDiv(class="align-center")
+            form(method="POST" action="/search")
+                div(class="form-row")
+                    input(class="form-control" type="text" name="searchTerm")
+                div(class="form-row")
+                    input(class="form-control btn btn-secondary" type="submit" value="Search")
+
+        div#resultDiv
+        - if (typeof(results) !== 'undefined')
+            for r, i in results
+                div(class="container")
+                    p=results[i]["artistName"]
+                    p=results[i]["city"]
+
+    script.
+        var results = !{JSON.stringify(results)}
+        console.log(results);

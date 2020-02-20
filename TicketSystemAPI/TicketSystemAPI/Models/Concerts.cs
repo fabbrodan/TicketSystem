@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Nest;
 
 namespace TicketSystemAPI.Models
 {
+    [ElasticsearchType(IdProperty = nameof(ConcertId))]
     public class Concerts
     {
         public int ConcertId { get; set; }

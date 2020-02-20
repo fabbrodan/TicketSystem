@@ -6,6 +6,8 @@ using Dapper;
 using Nest;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace TicketSystemAPI.Controllers
 {
@@ -27,7 +29,9 @@ namespace TicketSystemAPI.Controllers
         [Route("Get")]
         public IEnumerable<IndexObject> Get([FromQuery] string searchParam)
         {
-            if(searchParam == null || String.IsNullOrEmpty(searchParam))
+            
+
+            if (searchParam == null || String.IsNullOrEmpty(searchParam))
             {
                 return _client.Search<IndexObject>(s => s.Query(q => q.MatchAll())).Documents;
             }

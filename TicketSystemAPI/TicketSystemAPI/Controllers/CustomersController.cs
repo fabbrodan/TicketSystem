@@ -121,7 +121,7 @@ namespace TicketSystemAPI.Controllers
                 }
 
                 string getCustomer = "SELECT * FROM Customers WHERE LoginName = @LoginName AND Email = @Email;";
-                returnCustomer = conn.Query<Customers>(getCustomer, new { LoginName = newCustomer.LoginName, Email = newCustomer.Email }).FirstOrDefault();
+                returnCustomer = conn.Query<Customers>(getCustomer, new { newCustomer.LoginName, newCustomer.Email }).FirstOrDefault();
             }
 
             _client.IndexDocument<Customers>(returnCustomer);

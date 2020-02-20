@@ -27,7 +27,7 @@ html
                             a(class="nav-link text-dark" href="/login") Login
                     - if (authenticated >= 0)
                         li(class="nav-item")
-                            a(class="nav-link text-dark" onclick="SearchDisplay()") Search
+                            a(class="nav-link text-dark" href="/search") Search
                     - if(authenticated == 2)
                         li(class="nav-item")
                         a(class="nav-link text-dark" href="/admin/home/" + adm.adminId) Admin
@@ -37,9 +37,5 @@ html
                     - if (authenticated > 0)
                         li(class="nav-item")
                         a(class="nav-link text-dark" href="/signout") Logout
-        div#searchDiv(class="container expand" style="display: none;")
-            input#searchInput(type="text")
-            button(class="btn btn-secondary" onclick="Search()") Search
-        div#resultDiv(class="container")
 
     block content
