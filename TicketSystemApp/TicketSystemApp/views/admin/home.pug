@@ -52,13 +52,10 @@ block content
                         input(class="form-control btn btn-secondary" type="submit" value="Add")
         
         script(type="text/javascript").
-            var admin = !{admin};
-            var venues = !{venues};
-            var artists = !{artists};
-            var adminObject = JSON.parse(admin);
-            var venuesObject = JSON.parse(venues);
-            var artistsObject = JSON.parse(artists);
-            console.log(adminObject);
-            console.log(venuesObject);
-            console.log(artistsObject);
-            console.log(adminObject); document.getElementById("adminNameHeader").innerText = "You are logged in as " + adminObject["loginName"];
+            var admin = !{JSON.stringify(admin)};
+            var venues = !{JSON.stringify(venues)};
+            var artists = !{JSON.stringify(artists)};
+            console.log(admin);
+            console.log(venues);
+            console.log(artists);
+            document.getElementById("adminNameHeader").innerText = "You are logged in as " + admin["loginName"];

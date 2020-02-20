@@ -12,46 +12,79 @@ router.get('/home/:id', function (req, res) {
 
     // RESOLVE THIS SO THAT WE HAVE SEPARATE CALLS INSTEAD OF BEING CUTE ABOUT IT
 
-    var currentCall = 0;
-    var urls = ["http://127.0.0.10/api/Admin/" + req.params.id, "http://127.0.0.10/api/Artist", "http://127.0.0.10/api/Venue"];
-    var totalCall = urls.length - 1;
     var admin;
     var venues;
     var artists;
 
-    callUrl();
+    GetAdmin();
 
-    function callUrl() {
-        console.log(urls[currentCall]);
+    setTimeout(() => {
+        console.log(admin);
+    }, 1000);
+    GetVenues();
+
+    setTimeout(() => {
+        console.log(venues);
+    }, 1000);
+    GetArtists();
+
+    setTimeout(() => {
+        console.log(artists);
+    }, 1000);
+
+    res.render('admin/home', {
+        admin: admin,
+        venues: venues,
+        artists: artists
+    });
+
+    function GetAdmin() {
+
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", urls[currentCall], true);
-
-        xhr.send();
+        xhr.open("GET", "http://127.0.0.10/api/Admin/" + req.params.id, false);
 
         xhr.onreadystatechange = function () {
+            console.log("Admin readystate: " + this.readyState);
             if (this.readyState == 4 && this.status == 200) {
-                if (currentCall == 0) {
+                if (this.responseText != "") {
                     admin = JSON.parse(this.responseText);
-                    console.log(admin);
-                }
-                else if (currentCall == 1) {
-                    artists = JSON.parse(this.responseText);
-                    console.log(artists);
-                }
-                else if (currentCall == 2) {
-                    venues = JSON.parse(this.responseText);
-                    console.log(venues);
                 }
             }
         }
-
-        while (currentCall < totalCall) {
-            currentCall++
-            callUrl();
-        }
+        xhr.send();
     }
 
-    res.render('admin/home', { admin: admin, venues: venues, artists: artists })
+    function GetVenues() {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://127.0.0.10/api/Venue", false);
+
+        xhr.onreadystatechange = function () {
+            console.log("Venues readystate: " + this.readyState);
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText != "") {
+                    venues = JSON.parse(this.responseText);
+                }
+            }
+        }
+        xhr.send();
+    }
+
+    function GetArtists() {
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://127.0.0.10/api/Artist", false);
+
+        xhr.onreadystatechange = function () {
+            console.log("Artists readystate: " + this.readyState);
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText != "") {
+                    artists = JSON.parse(this.responseText);
+                }
+            }
+        }
+        xhr.send();
+    }
 });
 
 router.post('/login', function (req, res) {
