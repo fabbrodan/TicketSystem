@@ -10,7 +10,9 @@ router.get('/login', function (req, res) {
 
 router.get('/home/:id', function (req, res) {
 
-    // RESOLVE THIS SO THAT WE HAVE SEPARATE CALLS INSTEAD OF BEING CUTE ABOUT IT
+    // Ugly waits but this is to ensure that we load in the data before trying to send it to the template
+    // Hacky but will work for now
+    // Should implement Promises
 
     var admin;
     var venues;

@@ -10,9 +10,15 @@ block content
                 h5(class="pt-1") Add Concert
                 form(method="POST" action="/admin/concertAdd")
                     div(class="form-row pb-1")
-                        input(class="form-control" type="text" name="artistName" placeholder="Artist")
+                        select(class="form-control" name="artistName")
+                            option(value="", disabled=true, selected=true) Artist
+                            each artist in artists
+                                option=artist["artistName"]
                     div(class="form-row pb-1")
-                        input(class="form-control" type="text" name="venueName" placeholder="Venue")
+                        select(class="form-control" name="venueName")
+                            option(value="", disabled=true, selected=true) Venue
+                            each venue in venues
+                                option=venue["venueName"]
                     div(class="form-row pb-1")
                         input(class="form-control" type="text" name="price" placeholder="Price")
                     div(class="form-row pb-1")
