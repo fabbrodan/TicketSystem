@@ -113,7 +113,7 @@ CREATE TABLE [Customers] (
 [Password] nvarchar(max) not null,
 [PasswordSalt] nvarchar(max) not null,
 [RegisteredDate] datetime not null,
-[Currency] numeric(10,2) default(0.00),
+[Currency] numeric(10,2) default(100.00),
 [IsActive] bit default(1),
 CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED ([CustomerId]),
 CONSTRAINT [UK1_Customers] UNIQUE ([Email]));
@@ -165,13 +165,14 @@ DROP TABLE [Coupons];
 CREATE TABLE [Coupons] (
 [CouponId] int not null identity(5000, 1),
 [TicketId] int not null,
+[ExpirationDate] datetime default(DATEADD(mm, 3, CONVERT(date, GETDATE()))),
 CONSTRAINT [PK_Coupons] PRIMARY KEY CLUSTERED ([CouponId]));
 
 BEGIN
 SET IDENTITY_INSERT [Coupons] ON;
 INSERT INTO [Coupons]
-(CouponId, TicketId)
-SELECT CouponId, TicketId
+(CouponId, TicketId, ExpirationDate)
+SELECT CouponId, TicketId, ExpirationDate
 FROM #couponTmp;
 SET IDENTITY_INSERT [Coupons] OFF;
 END
@@ -182,7 +183,9 @@ ELSE
 BEGIN
 CREATE TABLE [Coupons] (
 [CouponId] int not null identity (5000,1),
-[TicketId] int not null);
+[TicketId] int not null,
+[ExpirationDate] datetime default(DATEADD(mm, 3, CONVERT(date, GETDATE()))),
+CONSTRAINT [PK_Coupons] PRIMARY KEY CLUSTERED ([CouponId]));
 END
 
 -- Setup of Concerts table
@@ -198,11 +201,14 @@ CREATE TABLE [Concerts] (
 [ConcertId] int not null identity(10000, 1),
 [ArtistId] int not null,
 [VenueId] int not null,
-[CalendarDate] datetime not null,
+[CalendarDate] date not null,
 [Cancelled] bit default(0),
 [Price] numeric(10, 2),
 [TicketsLeft] int null,
-CONSTRAINT [PK_Concerts] PRIMARY KEY CLUSTERED ([ConcertId]));
+CONSTRAINT [PK_Concerts] PRIMARY KEY CLUSTERED ([ConcertId]),
+CONSTRAINT [UK1_Concerts] UNIQUE ([ArtistId], [CalendarDate]),
+CONSTRAINT [UK2_Concerts] UNIQUE ([VenueId], [CalendarDate]),
+CONSTRAINT [CHK1_CalendarDate] CHECK(CalendarDate !< GETDATE()));
 
 BEGIN
 SET IDENTITY_INSERT [Concerts] ON;
@@ -221,11 +227,14 @@ CREATE TABLE [Concerts] (
 [ConcertId] int not null identity(10000, 1),
 [ArtistId] int not null,
 [VenueId] int not null,
-[CalendarDate] datetime not null,
+[CalendarDate] date not null,
 [Cancelled] bit default(0),
 [Price] numeric (10,2) null,
 [TicketsLeft] int null,
-CONSTRAINT [PK_Concerts] PRIMARY KEY CLUSTERED ([ConcertId]));
+CONSTRAINT [PK_Concerts] PRIMARY KEY CLUSTERED ([ConcertId]),
+CONSTRAINT [UK1_Concerts] UNIQUE ([ArtistId], [CalendarDate]),
+CONSTRAINT [UK2_Concerts] UNIQUE ([VenueId], [CalendarDate]),
+CONSTRAINT [CHK1_CalendarDate] CHECK(CalendarDate !< GETDATE()));
 END
 
 -- Setup of Venues table

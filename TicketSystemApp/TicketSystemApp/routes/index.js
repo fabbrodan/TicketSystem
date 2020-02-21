@@ -22,7 +22,7 @@ router.get('/signout', function (req, res) {
 });
 
 router.get('/search', function (req, res) {
-    res.render('search');
+    res.render('search', { results: { },  customerId: req.app.locals.customerId, poor: false});
 });
 
 router.post('/search', function (req, res) {
@@ -30,7 +30,7 @@ router.post('/search', function (req, res) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            res.render('search', { results: JSON.parse(this.responseText) });
+            res.render('search', { results: JSON.parse(this.responseText), customerId: req.app.locals.customerId, poor: false });
         }
     }
 
@@ -42,7 +42,7 @@ router.post('/search', function (req, res) {
 router.post('/buy', function (req, res) {
 
     if (req.app.locals.customerId == 0) {
-        res.render('search', { signedIn: false });
+        res.render('search', { results: {}, customerId: req.app.locals.customerId, poor: false });
         return;
     }
 
@@ -51,8 +51,13 @@ router.post('/buy', function (req, res) {
             customerId: req.app.locals.customerId
         }
     }, (error, response, body) => {
-        if (!error && response.statusCode == 200) {
-            res.render('search');
+            if (!error && response.statusCode == 200) {
+                if (body != "poor") {
+                    res.render('search', { results: {}, customerId: req.app.locals.customerId, poor: false });
+                }
+                else {
+                    res.render('search', { results: {}, customerId: req.app.locals.customerId, poor: true });
+                }
         }
     });
 });

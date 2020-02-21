@@ -46,6 +46,7 @@
     <Content Include="views\admin\login.pug">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="views\admin\reports.pug" />
     <Content Include="views\index.pug" />
     <Content Include="views\search.pug" />
     <Content Include="views\shared\layout.pug" />

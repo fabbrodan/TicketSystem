@@ -9,5 +9,6 @@ namespace TicketSystemAPI.Models
     {
         public int CouponId { get; set; }
         public int TicketId { get; set; }
+        public DateTime ExpirationDate { get; set; }
     }
 }

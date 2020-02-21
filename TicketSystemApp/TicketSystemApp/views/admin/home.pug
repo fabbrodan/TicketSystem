@@ -64,9 +64,21 @@ block content
                     div(class="form-row pb-1")
                         input(class="form-control btn btn-warning" type="submit" value="Start")
                 h3(class="font-weight-bold") Note that depending on the amount of data, this operation can take a long time!
+            div(class="col-lg-4 border")
+                h5(class="pt-1") Cancel Concert
+                form(method="POST" action="/admin/cancel")
+                    div(class="form-row pb-1")
+                        select(class="form-control" name="concertId")
+                            each concert in concerts
+                                if !concert["cancelled"]
+                                    option(value=concert["concertId"])=concert["artistName"] + " - " + concert["venueName"] + " - " + concert["concertDate"].substring(0, 10) + " " + concert["concertDate"].substring(11, 16)
+                    div(class="form-row pb-1")
+                        input(class="form-control btn btn-danger" type="submit" value="Cancel")
         
         script(type="text/javascript").
             var admin = !{JSON.stringify(admin)};
             var venues = !{JSON.stringify(venues)};
             var artists = !{JSON.stringify(artists)};
+            var concerts = !{JSON.stringify(concerts)};
+            
             document.getElementById("adminNameHeader").innerText = "You are logged in as " + admin["loginName"];

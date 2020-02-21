@@ -157,7 +157,7 @@ namespace TicketSystemAPI.Controllers
 
             if (concert.Price > customer.Currency)
             {
-                return "Not enough money";
+                return "poor";
             }
             else
             {
@@ -190,7 +190,7 @@ namespace TicketSystemAPI.Controllers
                     }
                 }
 
-                return "Bought!";
+                return "done";
             }
         }
 
@@ -199,17 +199,21 @@ namespace TicketSystemAPI.Controllers
         public Concerts Cancel(int id)
         {
             Concerts returnConcert = null;
+            IndexObject indexObject = null;
 
             using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
             {
                 try
                 {
                     conn.Open();
-                    string updateSql = "UPDATE Concerts SET Cancelled = 1 WHERE ConcertId = @ConcertId;";
-                    conn.Execute(updateSql, new { ConcertId = id });
+
+                    conn.Execute("SP_CancelConcert", new { concertId = id }, commandType: CommandType.StoredProcedure);
 
                     string selectSql = "SELECT * FROM Concerts WHERE ConcertId = @ConcertId;";
                     returnConcert = conn.Query<Concerts>(selectSql, new { ConcertId = id }).FirstOrDefault();
+
+                    string selectIndexSql = "SELECT * FROM ConcertIndexView WHERE ConcertId = @ConcertId;";
+                    indexObject = conn.Query<IndexObject>(selectIndexSql, new { concertId = id }).FirstOrDefault();
 
                 }
                 catch (SqlException exc)
@@ -217,8 +221,29 @@ namespace TicketSystemAPI.Controllers
                     Console.WriteLine(exc.Message);
                 }
             }
+            if (returnConcert != null)
+            {
+                _client.IndexDocument<Concerts>(returnConcert);
+                _client.IndexDocument<IndexObject>(indexObject);
 
-            _client.IndexDocument<Concerts>(returnConcert);
+                _client.Indices.Delete("customers");
+
+                using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        var customers = conn.Query<Customers>("SELECT * FROM Customers WHERE IsActive = 1;");
+                        _client.Bulk(request => request
+                        .Index("customers")
+                        .IndexMany<Customers>(customers));
+                    }
+                    catch (SqlException exc)
+                    {
+                        Console.WriteLine(exc.Message);
+                    }
+                }
+            }
 
             return returnConcert;
         }

@@ -9,15 +9,17 @@ router.get('/:id', function (req, res) {
 
     var customer;
     var customerTickets;
+    var coupons;
 
     async function PopulateCustomer() {
         customer = await GetCustomer();
+        coupons = await GetCustomerCoupons();
         customerTickets = await PopulateCustomerTickets();
     }
 
     async function PopulateCustomerTickets() {
         customerTickets = await GetCustomerTickets();
-        res.render('users', { customer: customer, customerTickets, customerTickets });
+        res.render('users', { customer: customer, customerTickets, customerTickets, coupons: coupons });
     }
 
     PopulateCustomer();
@@ -49,7 +51,20 @@ router.get('/:id', function (req, res) {
 
             xhr.open("GET", "http://127.0.0.10/api/Customers/" + req.params.id + "/Tickets", true);
             xhr.send();
-        })
+        });
+    }
+
+    function GetCustomerCoupons() {
+        return new Promise(resolve => {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(JSON.parse(this.responseText));
+                }
+            }
+            xhr.open("GET", "http://127.0.0.10/api/Customers/" + req.params.id + "/Coupons", true);
+            xhr.send();
+        });
     }
 
 });

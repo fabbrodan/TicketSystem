@@ -226,5 +226,34 @@ namespace TicketSystemAPI.Controllers
 
             return CustomerTickets;
         }
+
+        [HttpGet]
+        [Route("{id}/Coupons")]
+        public dynamic GetCoupons(int id)
+        {
+            IEnumerable<dynamic> CustomerCoupons = null;
+            using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = @"SELECT c.LoginName, cc.CouponId, con.Price, cc.ExpirationDate, con.ConcertId
+                                    FROM Concerts con
+                                    INNER JOIN Tickets t ON con.ConcertId = t.ConcertId
+                                    INNER JOIN Coupons cc ON t.TicketId = cc.TicketId
+                                    INNER JOIN CustomerTickets ct ON t.TicketId = ct.TicketId
+                                    INNER JOIN Customers c ON ct.CustomerId = c.CustomerId
+                                    WHERE ct.CustomerId = @CustomerId
+                                    AND con.Cancelled = 1";
+
+                    CustomerCoupons = conn.Query<dynamic>(sql, new { CustomerId = id });
+                }
+                catch (SqlException exc)
+                {
+                    Console.WriteLine(exc.Message);
+                }
+            }
+            return CustomerCoupons;
+        }
     }
 }

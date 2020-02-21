@@ -33,36 +33,54 @@ block content
                 div(class="row")
                     div(class="col-lg-12")
                         h4 Coupons
+                            each c in coupons
+                                div(class="row border-bottom border-dark")
+                                    div(class="col-lg-6")
+                                        label(for="value") Value
+                                        h6=c["Price"] + ".00 PES"
+                                    div(class="col-lg-6")
+                                        - var now = new Date()
+                                        - var exp = new Date(c["ExpirationDate"])
+                                            label(for="expDate") Expires:
+                                        if (now < exp)
+                                            h6=c["ExpirationDate"].substring(0,10)
+                                        else
+                                            h5(class="text-danger") Expired
             div(class="col-lg-1")
             div(class="col-lg-6")
                 div(class="col-lg-12 overflow-auto h-75")
                     h3(class="pt-1") Your Orders:
                         each t, i in customerTickets
-                            div(class="row")
-                                div(class="col-lg-6")
-                                    h5#artistName=customerTickets[i]["ArtistName"]
-                                div(class="col-lg-6")
-                                    h5#venueName=customerTickets[i]["VenueName"]
-                            div(class="row")
-                                div(class="col-lg-2")
-                                    h6 Date:
-                                div(class="col-lg-4")
-                                    h6#concertDate=customerTickets[i]["CalendarDate"].substring(0,10) + ' ' + customerTickets[i]["CalendarDate"].substring(11, 16)
-                                div(class="col-lg-2")
-                                    h6 Purchased:
-                                div(class="col-lg-4")
-                                    h6#purchaseDate=customerTickets[i]["SoldDate"].substring(0,10) + ' ' + customerTickets[i]["SoldDate"].substring(11, 16)
-                            div(class="row border-bottom border-dark")
-                                div(class="col-lg-6")
-                                    h5 Ticket Number:
-                                div(class="col-lg-6")
-                                    h5#ticketNumber=customerTickets[i]["TicketId"]
+                            if customerTickets[i]["Cancelled"]
+                                div(class="row pt-1")
+                                    div(class="col-lg-12")
+                                        h4(class="text-danger") Cancelled
+                                div(class="row")
+                                    div(class="col-lg-6")
+                                        h5#artistName=customerTickets[i]["ArtistName"]
+                                    div(class="col-lg-6")
+                                        h5#venueName=customerTickets[i]["VenueName"]
+                                div(class="row")
+                                    div(class="col-lg-2")
+                                        h6 Date:
+                                    div(class="col-lg-4")
+                                        h6#concertDate=customerTickets[i]["CalendarDate"].substring(0,10) + ' ' + customerTickets[i]["CalendarDate"].substring(11, 16)
+                                    div(class="col-lg-2")
+                                        h6 Purchased:
+                                    div(class="col-lg-4")
+                                        h6#purchaseDate=customerTickets[i]["SoldDate"].substring(0,10) + ' ' + customerTickets[i]["SoldDate"].substring(11, 16)
+                                div(class="row border-bottom border-dark")
+                                    div(class="col-lg-6")
+                                        h5 Ticket Number:
+                                    div(class="col-lg-6")
+                                        h5#ticketNumber=customerTickets[i]["TicketId"]
 
     script.
         var customer = !{customer};
         var customerObj = JSON.parse(customer);
         var customerTickets = !{JSON.stringify(customerTickets)};
+        var coupons = !{JSON.stringify(coupons)}
 
         document.getElementById("userName").innerText = customerObj["loginName"];
         document.getElementById("userEmail").innerText = customerObj["email"];
-        document.getElementById("userCurrency").innerText = customerObj["currency"];
+        document.getElementById("userCurrency").innerText = customerObj["currency"] + ".00";

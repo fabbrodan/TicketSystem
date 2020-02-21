@@ -17,6 +17,7 @@ router.get('/home/:id', function (req, res) {
     var admin;
     var venues;
     var artists;
+    var concerts;
 
     GetAdmin();
     setTimeout(() => {
@@ -31,10 +32,15 @@ router.get('/home/:id', function (req, res) {
     setTimeout(() => {
     }, 1000);
 
+    GetConcerts();
+    setTimeout(() => {
+    }, 1000);
+
     res.render('admin/home', {
         admin: admin,
         venues: venues,
-        artists: artists
+        artists: artists,
+        concerts: concerts
     });
 
     function GetAdmin() {
@@ -79,6 +85,20 @@ router.get('/home/:id', function (req, res) {
             if (this.readyState == 4 && this.status == 200) {
                 if (this.responseText != "") {
                     artists = JSON.parse(this.responseText);
+                }
+            }
+        }
+        xhr.send();
+    }
+
+    function GetConcerts() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://127.0.0.10/api/Search/Get?searchParam=", false);
+
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText != "") {
+                    concerts = JSON.parse(this.responseText);
                 }
             }
         }
@@ -206,9 +226,43 @@ router.post('/reindex', function (req, res) {
                 res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
             }
             else {
-                res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId)
+                res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
             }
         });
 })
+
+router.post('/cancel', function (req, res) {
+
+    var concertId = parseInt(req.body.concertId);
+
+    request.post("http://127.0.0.10/api/Concert/Cancel/" + concertId, (error, response, body) => {
+        if (!error && response.status == 200) {
+            res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
+        }
+        else {
+            res.redirect('/admin/home/' + req.app.locals.globalAdmin.adminId);
+        }
+    });
+});
+
+router.get('/reports', function (req, res) {
+    res.render('admin/reports', { periodsale: {} });
+});
+
+router.post('/periodsales', function (req, res) {
+    var startDate = req.body.startDate;
+    var endDate = req.body.endDate;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", encodeURI("http://127.0.0.10/api/Reports/PeriodSales?startDate=" + startDate + "&endDate=" + endDate), true);
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            res.render('admin/reports', { periodsale: JSON.parse(this.responseText) });
+        }
+    }
+
+    xhr.send();
+    
+});
 
 module.exports = router;

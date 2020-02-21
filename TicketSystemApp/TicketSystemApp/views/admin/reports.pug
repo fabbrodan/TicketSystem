@@ -1,0 +1,41 @@
+extends ../shared/layout
+
+block content
+
+    script.
+        const periodSales = !{JSON.stringify(periodsale)}
+        //console.log(periodSales);
+
+    div(class="container")
+        div(class="row")
+            div(class="col-lg-12 align-center")
+                h1 Reports
+        div(class="row")
+            div(class="col-lg-6")
+                h3 Periodic Sales
+                div(class="row")
+                    div(class="col-lg-12")
+                        form(method="POST" action="/admin/periodsales")
+                            div(class="form-row")
+                                div(class="col-lg-6")
+                                    label(for="startDate") From:
+                                    input(class="form-control" type="date" name="startDate")
+                                div(class="col-lg-6")
+                                    label(for="endDate") End:
+                                    input(class="form-control" type="date" name="endDate")
+                            div(class="form-row pt-2")
+                                input(class="form-control btn btn-secondary" type="submit" value="Submit")
+
+                div(class="row")
+                    div(class="col-lg-6")
+                        h3 Tickets Sold:
+                    div(class="col-lg-6")
+                        h3 Revenue:
+                div(class="row")
+                -if (typeof(periodSales) !== 'undefined')
+                    for r, i in periodSales
+                        div(class="col-lg-6")
+                            h3=periodSales[i]["theCount"]
+                        div(class="col-lg-6")
+                            h3=periodSales[i]["Revenue"]
+                -else console.log(periodSales)

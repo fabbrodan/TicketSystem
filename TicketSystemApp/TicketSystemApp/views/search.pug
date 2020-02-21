@@ -31,25 +31,37 @@ block content
                                     p(name="date")=results[i]["concertDate"].substring(0, 10) + " " + results[i]["concertDate"].substring(11, 16)
                                 div(class="col-lg-2")
                                     label(class="font-weight-bold" for="price") Price:
-                                    p(name="price")=results[i]["concertPrice"] + ".00 SEK"
-                                div(class="col-lg-2")
-                                    label(class="font-weight-bold" for="ticketsLeft") Tickets Left:
-                                    p(name="ticketsLeft")=results[i]["ticketsLeft"] + "/" + results[i]["venueCapacity"]
+                                    p(name="price")=results[i]["concertPrice"] + ".00 PES"
+                                if !results[i]["cancelled"]
+                                    div(class="col-lg-2")
+                                        label(class="font-weight-bold" for="ticketsLeft") Tickets Left:
+                                        p(name="ticketsLeft")=results[i]["ticketsLeft"] + "/" + results[i]["venueCapacity"]
                             div(class="row border-bottom border-dark pb-2")
                                 div(class="col-lg-1")
-                                    form(method="POST" action="/buy")
+                                    form#buyForm(method="POST" action="/buy")
                                         div(class="form-row")
                                             - var id = results[i]["concertId"]
                                             input(type="hidden" value=id name="concertId")
-                                            input(class="form-control btn btn-secondary" type="submit" value="Buy")
+                                            if !results[i]["cancelled"]
+                                                input(class="form-control btn btn-secondary" type="submit" value="Buy")
+                                            if results[i]["cancelled"]
+                                                h3(class="text-danger") Cancelled
 
     script.
-        var results = !{JSON.stringify(results)}
-        console.log(results);
-
-        var signedIn = #{signedIn};
+        var results = !{JSON.stringify(results)};
+        var custId = #{customerId};
+        var poor = #{poor};
 
         $(document).ready(function() {
-            if (typeof(signedIn) !== 'undefined' && !signedIn) {
-                alert("Please sign in before buying anything");
-        }});
+            $("#buyForm").submit(function(event) {
+                event.preventDefault();
+                if (custId == 0) {
+                alert("Please sign in before buying tickets.");
+                }
+                $(this).unbind('submit').submit();
+            });
+
+            if(poor) {
+            alert("You do not have the \"pesetas\" to buy this.");
+            }
+        });
