@@ -7,15 +7,17 @@ block content
         const periodSaleDates = !{JSON.stringify(periodSaleDates)}
         const topTen = !{JSON.stringify(topTen)}
         const topTenDates = !{JSON.stringify(topTenDates)}
+        const couponStats = !{JSON.stringify(couponStats)}
         console.log(periodSale);
         console.log(topTen);
+        console.log(couponStats);
 
     div(class="container")
         div(class="row")
             div(class="col-lg-12 align-center")
                 h1 Reports
         div(class="row")
-            div(class="col-lg-5")
+            div(class="col-lg-5 border-bottom-thick")
                 h3 Periodic Sales
                 div(class="row")
                     div(class="col-lg-12")
@@ -34,17 +36,17 @@ block content
                     div(class="col-lg-12")
                         if periodSaleDates["startDate"] !== '' && periodSaleDates["endDate"] !== ''
                             h4="Between: " + periodSaleDates["startDate"] + " - " + periodSaleDates["endDate"]
-                div(class="row")
+                div(class="row border-bottom-thick mb-2")
                     div(class="col-lg-6")
                         h3 Tickets Sold:
                     div(class="col-lg-6")
                         h3 Revenue:
                 div(class="row")
                     div(class="col-lg-6")
-                        if periodSale["theCount"] !== null || periodSale["theCount"] !== ""
+                        if periodSale["theCount"] != ""
                             h3=periodSale["theCount"]
                     div(class="col-lg-6")
-                        if periodSale["Revenue"] !== null || periodSale["Revenue"] !== ""
+                        if periodSale["Revenue"] != ""
                             h3=periodSale["Revenue"] + ".00 PES"
             div(class="col-lg-2")
             div(class="col-lg-5")
@@ -65,9 +67,54 @@ block content
                     div(class="col-lg-12")
                         if topTenDates["startDate"] !== '' && topTenDates["endDate"] !== ''
                             h4="Between: " + topTenDates["startDate"] + " - " + topTenDates["endDate"]
-                div(class="row")
+                div(class="row border-bottom-thick mb-2")
                     div(class="col-lg-6")
                         h3 Revenue:
                     div(class="col-lg-6")
                         h3 Artist:
+                for r, i in topTen
+                    if topTen[i]["sumPrice"] != "" && topTen[i]["ArtistName"] != ""
+                        div(class="row border-bottom border-dark mb-1")
+                            if topTen[i]["sumPrice"] != ""
+                                div(class="col-lg-6")
+                                    h3=topTen[i]["sumPrice"] + ".00 PES"
+                            if topTen[i]["ArtistName"] != ""
+                                div(class="col-lg-6")
+                                    h3=topTen[i]["ArtistName"]
+
+        div(class="row pt-3")
+            div(class="col-lg-10 border-bottom-thick")
+                h3 Coupon Statistics
+                div(class="row")
+                    div(class="col-lg-3")
+                        form(method="POST" action="/admin/couponstats")
+                            div(class="form-row pt-2")
+                                input(class="form-control btn btn-secondary" type="submit" value="Retrieve")
+                div(class="row border-bottom-thick pt-2 mb-2")
+                    div(class="col-lg-2")
+                        h6 Coupon Count:
+                    div(class="col-lg-2")
+                        h6 Total Value:
+                    div(class="col-lg-2")
+                        h6 Exp. Date:
+                    div(class="col-lg-2")
+                        h6 Artist:
+                    div(class="col-lg-2")
+                        h6 Venue:
+                    div(class="col-lg-2")
+                        h6 Date:
+                for c, i in couponStats
+                    div(class="row")
+                        div(class="col-lg-2")
+                            h6=couponStats[i]["theCount"]
+                        div(class="col-lg-2")
+                            h6=couponStats[i]["sumValue"]
+                        div(class="col-lg-2")
+                            h6=couponStats[i]["ExpirationDate"].substring(0,10)
+                        div(class="col-lg-2")
+                            h6=couponStats[i]["ArtistName"]
+                        div(class="col-lg-2")
+                            h6=couponStats[i]["VenueName"]
+                        div(class="col-lg-2")
+                            h6=couponStats[i]["ConcertDate"].substring(0,10) + " " + couponStats[i]["ConcertDate"].substring(11,16)
                     

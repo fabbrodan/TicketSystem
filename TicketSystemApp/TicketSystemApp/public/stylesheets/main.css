@@ -5,3 +5,7 @@
 a:hover {
     cursor: pointer;
 }
+
+.border-bottom-thick {
+    border-bottom: solid 3px black
+}

@@ -68,7 +68,7 @@ namespace TicketSystemAPI.Controllers
                                     INNER JOIN CustomerTickets ct ON t.TicketId = ct.TicketId
                                     WHERE ct.SoldDate BETWEEN @StartDate AND @EndDate
                                     GROUP BY a.ArtistName
-                                    ORDER BY _rank DESC;";
+                                    ORDER BY _rank ASC;";
 
                     Results = conn.Query<dynamic>(sql, new { StartDate = startDate, EndDate = endDate });
                 }
@@ -91,10 +91,11 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = @"SELECT cc.CouponId, t.TicketId, c.ConcertId, c.Price, cc.ExpirationDate
-                                    FROM Coupons cc
-                                    INNER JOIN Tickets t ON cc.TicketId = t.TicketId
-                                    INNER JOIN Concerts c ON t.ConcertId = c.ConcertId;";
+                    string sql = @"SELECT COUNT(cop.CouponId) as theCount, SUM(cv.ConcertPrice) as sumValue, cv.ConcertDate, cv.ArtistName, cv.VenueName, cop.ExpirationDate
+                                    FROM Coupons cop
+                                    INNER JOIN Tickets t ON cop.TicketId = t.TicketId
+                                    INNER JOIN ConcertIndexView cv ON t.ConcertId = cv.ConcertId
+                                    GROUP BY cv.ConcertDate, cv.ArtistName, cv.VenueName, cop.ExpirationDate;";
 
                     Results = conn.Query<dynamic>(sql);
                 }

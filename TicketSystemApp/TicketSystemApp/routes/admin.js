@@ -6,8 +6,9 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 var periodSale = { theCount: "", Revenue: "" };
 var periodSaleDates = { startDate: "", endDate: "" };
-var topTen = { sumPrice: "", ArtistName: "" };
+var topTen = [{ sumPrice: "", ArtistName: "" }];
 var topTenDates = { startDate: "", endDate: "" };
+var couponStats = { theCount: "", sumValue: "", ConcertDate: "", ArtistName: "", VenueName: "", ExpirationDate: "" };
 
 router.get('/login', function (req, res) {
     res.render('admin/login');
@@ -255,7 +256,8 @@ router.get('/reports', function (req, res) {
         periodSale: periodSale,
         topTen: topTen,
         topTenDates: topTenDates,
-        periodSaleDates: periodSaleDates
+        periodSaleDates: periodSaleDates,
+        couponStats: couponStats
     });
 });
 
@@ -273,7 +275,8 @@ router.post('/periodsales', function (req, res) {
                 periodSale: periodSale,
                 periodSaleDates: periodSaleDates,
                 topTen: topTen,
-                topTenDates: topTenDates
+                topTenDates: topTenDates,
+                couponStats: couponStats
             });
         }
     }
@@ -296,12 +299,33 @@ router.post('/toptenartists', function (req, res) {
                 topTen,
                 periodSale,
                 periodSaleDates,
-                topTenDates
+                topTenDates,
+                couponStats: couponStats
             });
         }
     }
 
     xhr.send();
 });
+
+router.post('/couponstats', function (req, res) {
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", encodeURI("http://127.0.0.10/api/Reports/CouponReport"), true);
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            couponStats = JSON.parse(this.responseText);
+            res.render('admin/reports', {
+                periodSale: periodSale,
+                periodSaleDates: periodSaleDates,
+                topTen: topTen,
+                topTenDates: topTenDates,
+                couponStats: couponStats
+            });
+        }
+    }
+
+    xhr.send();
+})
 
 module.exports = router;

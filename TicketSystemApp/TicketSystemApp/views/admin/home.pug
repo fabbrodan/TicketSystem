@@ -20,7 +20,7 @@ block content
                             each venue in venues
                                 option(value=venue["venueId"])=venue["venueName"]
                     div(class="form-row pb-1")
-                        input(class="form-control" type="text" name="price" placeholder="Price")
+                        input(class="form-control" type="number" name="price" placeholder="Price")
                     div(class="form-row pb-1")
                         label(for="concertDate") Date:
                             input(class="form-control" type="date" name="concertDate")

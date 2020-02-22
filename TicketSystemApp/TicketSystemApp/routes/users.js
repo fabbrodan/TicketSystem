@@ -29,8 +29,7 @@ router.get('/:id', function (req, res) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    //customer: JSON.stringify(this.responseText);
-                    resolve(JSON.stringify(this.responseText));
+                    resolve(JSON.parse(this.responseText));
                 }
             }
 
@@ -44,7 +43,6 @@ router.get('/:id', function (req, res) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
-                    //customerTickets = JSON.stringify(this.responseText);
                     resolve(JSON.parse(this.responseText));
                 }
             }
@@ -73,12 +71,12 @@ router.post('/addFunds', function (req, res) {
 
     request.post("http://127.0.0.10/api/Customers/AddFunds", {
         json: {
-            CustomerId: req.app.locals.customerId,
+            CustomerId: req.app.locals.globalCustomer.customerId,
             Currency: parseFloat(req.body.amount)
         }
     }, (error, response, body) => {
             if (!error && response.statusCode == 200) {
-                res.redirect("/users/" + req.app.locals.customerId);
+                res.redirect("/users/" + req.app.locals.globalCustomer.customerId);
             }
     })
 

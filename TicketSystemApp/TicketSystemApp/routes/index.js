@@ -17,12 +17,18 @@ router.get('/login', function (req, res) {
 
 router.get('/signout', function (req, res) {
     req.app.locals.typeOfAuthenticated = 0;
-    console.log(req.app.locals.typeOfAuthentication);
+    req.app.locals.globalAdmin = null;
+    req.app.locals.globalCustomer = null;
     res.redirect('/');
 });
 
 router.get('/search', function (req, res) {
-    res.render('search', { results: { },  customerId: req.app.locals.customerId, poor: false});
+    var custId = 0;
+    if (req.app.locals.globalCustomer != null) {
+        custId = req.app.locals.globalCustomer.customerId;
+    }
+
+    res.render('search', { results: {}, customerId: custId, poor: false});
 });
 
 router.post('/search', function (req, res) {
@@ -30,7 +36,7 @@ router.post('/search', function (req, res) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            res.render('search', { results: JSON.parse(this.responseText), customerId: req.app.locals.customerId, poor: false });
+            res.render('search', { results: JSON.parse(this.responseText), customerId: req.app.locals.globalCustomer != null ? req.app.locals.globalCustomer.customerId : 0, poor: false });
         }
     }
 
@@ -41,22 +47,22 @@ router.post('/search', function (req, res) {
 
 router.post('/buy', function (req, res) {
 
-    if (req.app.locals.customerId == 0) {
-        res.render('search', { results: {}, customerId: req.app.locals.customerId, poor: false });
+    if (req.app.locals.globalCustomer == null) {
+        res.render('search', { results: {}, customerId: req.app.locals.globalCustomer != null ? req.app.locals.globalCustomer.customerId : 0, poor: false });
         return;
     }
-
+    
     request.post("http://127.0.0.10/api/Concert/purchase/" + req.body.concertId, {
         json: {
-            customerId: req.app.locals.customerId
+            customerId: req.app.locals.globalCustomer.customerId
         }
     }, (error, response, body) => {
             if (!error && response.statusCode == 200) {
                 if (body != "poor") {
-                    res.render('search', { results: {}, customerId: req.app.locals.customerId, poor: false });
+                    res.render('search', { results: {}, customerId: req.app.locals.globalCustomer.customerId, poor: false });
                 }
                 else {
-                    res.render('search', { results: {}, customerId: req.app.locals.customerId, poor: true });
+                    res.render('search', { results: {}, customerId: req.app.locals.globalCustomer.customerId, poor: true });
                 }
         }
     });

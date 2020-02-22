@@ -18,7 +18,7 @@ router.post('/', function (req, res) {
             if (!error && response.statusCode == 200) {
                 if (body !== null) {
                     req.app.locals.typeOfAuthenticated = 1;
-                    req.app.locals.customerId = body.customerId;
+                    req.app.locals.globalCustomer = body;
                     res.redirect('/users/'+body.customerId);
                 } else {
                     res.render('index', { title: "Ticket System" });
@@ -44,7 +44,7 @@ router.post('/newUser', function (req, res) {
             if (!error && response.statusCode == 200) {
                 if (body != null) {
                     req.app.locals.typeOfAuthenticated = 1;
-                    req.app.locals.customerId = body.customerId;
+                    req.app.locals.globalCustomer = body;
                     res.redirect('/users/' + body.customerId);
                 }
             }

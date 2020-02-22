@@ -38,7 +38,7 @@ block content
                                         p(name="ticketsLeft")=results[i]["ticketsLeft"] + "/" + results[i]["venueCapacity"]
                             div(class="row border-bottom border-dark pb-2")
                                 div(class="col-lg-1")
-                                    form#buyForm(method="POST" action="/buy")
+                                    form(class="buyForm" method="POST" action="/buy")
                                         div(class="form-row")
                                             - var id = results[i]["concertId"]
                                             input(type="hidden" value=id name="concertId")
@@ -53,7 +53,7 @@ block content
         var poor = #{poor};
 
         $(document).ready(function() {
-            $("#buyForm").submit(function(event) {
+            $(".buyForm").submit(function(event) {
                 event.preventDefault();
                 if (custId == 0) {
                 alert("Please sign in before buying tickets.");

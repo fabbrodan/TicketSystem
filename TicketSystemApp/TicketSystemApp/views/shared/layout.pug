@@ -1,7 +1,7 @@
 block variables
 -var authenticated = typeOfAuthenticated
--var custId = customerId
--var adm = globalAdmin
+-var customer = globalCustomer
+-var admin = globalAdmin
 doctype html
 html
   head
@@ -30,13 +30,13 @@ html
                             a(class="nav-link text-dark" href="/search") Search
                     - if(authenticated == 2)
                         li(class="nav-item")
-                        a(class="nav-link text-dark" href="/admin/home/" + adm.adminId) Admin
+                        a(class="nav-link text-dark" href="/admin/home/" + admin.adminId) Admin
                     - if(authenticated == 2)
                         li(class="nav-item")
                         a(class="nav-link text-dark" href="/admin/reports") Statistics
                     - if (authenticated == 1)
                         li(class="navitem")
-                        a(class="nav-link text-dark" href="/users/" + custId) My Page
+                        a(class="nav-link text-dark" href="/users/" + customer.customerId) My Page
                     - if (authenticated > 0)
                         li(class="nav-item")
                         a(class="nav-link text-dark" href="/signout") Logout
