@@ -3,15 +3,19 @@ extends ../shared/layout
 block content
 
     script.
-        const periodSales = !{JSON.stringify(periodsale)}
-        //console.log(periodSales);
+        const periodSale = !{JSON.stringify(periodSale)}
+        const periodSaleDates = !{JSON.stringify(periodSaleDates)}
+        const topTen = !{JSON.stringify(topTen)}
+        const topTenDates = !{JSON.stringify(topTenDates)}
+        console.log(periodSale);
+        console.log(topTen);
 
     div(class="container")
         div(class="row")
             div(class="col-lg-12 align-center")
                 h1 Reports
         div(class="row")
-            div(class="col-lg-6")
+            div(class="col-lg-5")
                 h3 Periodic Sales
                 div(class="row")
                     div(class="col-lg-12")
@@ -21,21 +25,49 @@ block content
                                     label(for="startDate") From:
                                     input(class="form-control" type="date" name="startDate")
                                 div(class="col-lg-6")
-                                    label(for="endDate") End:
+                                    label(for="endDate") To:
                                     input(class="form-control" type="date" name="endDate")
                             div(class="form-row pt-2")
                                 input(class="form-control btn btn-secondary" type="submit" value="Submit")
 
+                div(class="row")
+                    div(class="col-lg-12")
+                        if periodSaleDates["startDate"] !== '' && periodSaleDates["endDate"] !== ''
+                            h4="Between: " + periodSaleDates["startDate"] + " - " + periodSaleDates["endDate"]
                 div(class="row")
                     div(class="col-lg-6")
                         h3 Tickets Sold:
                     div(class="col-lg-6")
                         h3 Revenue:
                 div(class="row")
-                -if (typeof(periodSales) !== 'undefined')
-                    for r, i in periodSales
-                        div(class="col-lg-6")
-                            h3=periodSales[i]["theCount"]
-                        div(class="col-lg-6")
-                            h3=periodSales[i]["Revenue"]
-                -else console.log(periodSales)
+                    div(class="col-lg-6")
+                        if periodSale["theCount"] !== null || periodSale["theCount"] !== ""
+                            h3=periodSale["theCount"]
+                    div(class="col-lg-6")
+                        if periodSale["Revenue"] !== null || periodSale["Revenue"] !== ""
+                            h3=periodSale["Revenue"] + ".00 PES"
+            div(class="col-lg-2")
+            div(class="col-lg-5")
+                h3 Top 10 Selling Artists
+                div(class="row")
+                    div(class="col-lg-12")
+                        form(method="POST" action="/admin/toptenartists")
+                            div(class="form-row")
+                                div(class="col-lg-6")
+                                    label(for="startDate") From:
+                                    input(class="form-control" type="date" name="startDate")
+                                div(class="col-lg-6")
+                                    label(for="endDate") To:
+                                    input(class="form-control" type="date" name="endDate")
+                            div(class="form-row pt-2")
+                                input(class="form-control btn btn-secondary" type="submit" value="Submit")
+                div(class="row")
+                    div(class="col-lg-12")
+                        if topTenDates["startDate"] !== '' && topTenDates["endDate"] !== ''
+                            h4="Between: " + topTenDates["startDate"] + " - " + topTenDates["endDate"]
+                div(class="row")
+                    div(class="col-lg-6")
+                        h3 Revenue:
+                    div(class="col-lg-6")
+                        h3 Artist:
+                    

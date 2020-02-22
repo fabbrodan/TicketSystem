@@ -26,7 +26,7 @@ namespace TicketSystemAPI.Controllers
         [Route("PeriodSales")]
         public dynamic PeriodSales([FromQuery] string startDate, [FromQuery] string endDate)
         {
-            IEnumerable<dynamic> Results = null;
+            dynamic Result = null;
 
             using (SqlConnection conn = new SqlConnection(_dbOptions.Value.ConnectionString))
             {
@@ -39,7 +39,7 @@ namespace TicketSystemAPI.Controllers
                                     INNER JOIN CustomerTickets ct ON t.TicketId = ct.TicketId
                                     WHERE ct.SoldDate BETWEEN @StartDate AND @EndDate;";
 
-                    Results = conn.Query<dynamic>(sql, new { StartDate = startDate, EndDate = endDate });
+                    Result = conn.Query<dynamic>(sql, new { StartDate = startDate, EndDate = endDate }).FirstOrDefault();
                 }
                 catch (SqlException exc)
                 {
@@ -47,7 +47,7 @@ namespace TicketSystemAPI.Controllers
                 }
             }
 
-            return Results;
+            return Result;
         }
 
         [HttpGet]

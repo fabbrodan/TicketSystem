@@ -4,6 +4,11 @@ var router = express.Router();
 var request = require('request');
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
+var periodSale = { theCount: "", Revenue: "" };
+var periodSaleDates = { startDate: "", endDate: "" };
+var topTen = { sumPrice: "", ArtistName: "" };
+var topTenDates = { startDate: "", endDate: "" };
+
 router.get('/login', function (req, res) {
     res.render('admin/login');
 });
@@ -246,7 +251,12 @@ router.post('/cancel', function (req, res) {
 });
 
 router.get('/reports', function (req, res) {
-    res.render('admin/reports', { periodsale: {} });
+    res.render('admin/reports', {
+        periodSale: periodSale,
+        topTen: topTen,
+        topTenDates: topTenDates,
+        periodSaleDates: periodSaleDates
+    });
 });
 
 router.post('/periodsales', function (req, res) {
@@ -257,12 +267,41 @@ router.post('/periodsales', function (req, res) {
     xhr.open("GET", encodeURI("http://127.0.0.10/api/Reports/PeriodSales?startDate=" + startDate + "&endDate=" + endDate), true);
     xhr.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            res.render('admin/reports', { periodsale: JSON.parse(this.responseText) });
+            periodSale = JSON.parse(this.responseText);
+            periodSaleDates = { startDate, endDate };
+            res.render('admin/reports', {
+                periodSale: periodSale,
+                periodSaleDates: periodSaleDates,
+                topTen: topTen,
+                topTenDates: topTenDates
+            });
         }
     }
 
     xhr.send();
     
+});
+
+router.post('/toptenartists', function (req, res) {
+    var startDate = req.body.startDate;
+    var endDate = req.body.endDate;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", encodeURI("http://127.0.0.10/api/Reports/TopTenArtists?startDate=" + startDate + "&endDate=" + endDate), true);
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            topTen = JSON.parse(this.responseText);
+            topTenDates = { startDate, endDate };
+            res.render('admin/reports', {
+                topTen,
+                periodSale,
+                periodSaleDates,
+                topTenDates
+            });
+        }
+    }
+
+    xhr.send();
 });
 
 module.exports = router;
