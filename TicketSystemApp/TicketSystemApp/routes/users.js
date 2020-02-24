@@ -19,7 +19,7 @@ router.get('/:id', function (req, res) {
 
     async function PopulateCustomerTickets() {
         customerTickets = await GetCustomerTickets();
-        res.render('users', { customer: customer, customerTickets, customerTickets, coupons: coupons });
+        res.render('users', { cust: customer, customerTickets, customerTickets, coupons: coupons });
     }
 
     PopulateCustomer();

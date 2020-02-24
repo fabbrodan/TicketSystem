@@ -76,8 +76,7 @@ block content
                                     h5#ticketNumber=customerTickets[i]["TicketId"]
 
     script.
-        var customerObj = null;
-        customerObj = !{JSON.stringify(customer)};
+        var customerObj = !{JSON.stringify(cust)};
         var customerTickets = !{JSON.stringify(customerTickets)};
         var coupons = !{JSON.stringify(coupons)}
         console.log(customerObj);

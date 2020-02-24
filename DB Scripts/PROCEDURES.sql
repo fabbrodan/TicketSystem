@@ -20,15 +20,12 @@ Concerts con
 WHERE CustomerId = @customerId
 AND con.ConcertId = @concertId;
 
-INSERT INTO Tickets (ConcertId) VALUES(@concertId);
+INSERT INTO Tickets (ConcertId, CustomerId) VALUES(@concertId, @customerId);
 
-INSERT INTO CustomerTickets
-(CustomerId, TicketId)
-VALUES(@customerId, (SELECT SCOPE_IDENTITY()));
-
-UPDATE Concerts
-SET TicketsLeft = TicketsLeft - 1
-WHERE ConcertId = @concertId;
+UPDATE c
+SET c.TicketsLeft = c.TicketsLeft - 1
+FROM Concerts c
+WHERE c.ConcertId = @concertId;
 
 END TRY
 BEGIN CATCH

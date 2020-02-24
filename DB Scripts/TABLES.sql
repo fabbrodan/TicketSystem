@@ -136,6 +136,8 @@ DROP TABLE [Tickets];
 CREATE TABLE [Tickets] (
 [TicketId] int not null identity(1000, 1),
 [ConcertId] int not null,
+[CustomerId] int not null,
+[SoldDate] datetime not null default(GETDATE()),
 CONSTRAINT [PK_Tickets] PRIMARY KEY CLUSTERED ([TicketId]));
 
 BEGIN
@@ -154,7 +156,8 @@ BEGIN
 CREATE TABLE [Tickets] (
 [TicketId] int not null identity(1000, 1),
 [ConcertId] int not null,
-[Price] numeric (10, 2),
+[CustomerId] int not null,
+[SoldDate] datetime not null default(GETDATE()),
 CONSTRAINT [PK_Tickets] PRIMARY KEY CLUSTERED ([TicketId]));
 END
 
@@ -286,43 +289,6 @@ CONSTRAINT [UK1_Venues] UNIQUE ([VenueName]),
 CONSTRAINT [CHK_VenueCapacity] CHECK ([Capacity] > 0));
 END
 
--- Setup of CustomerTickets table
--- Used to map a user to a booked show through CustomerTickets > Tickets > Concert
-IF EXISTS (
-SELECT 1 FROM sys.tables WHERE name = 'CustomerTickets')
-BEGIN
-
-SELECT * INTO #custTicketTmp FROM [CustomerTickets];
-
-DROP TABLE [CustomerTickets];
-
-CREATE TABLE [CustomerTickets] (
-[CustomerId] int not null,
-[TicketId] int not null,
-[SoldDate] datetime not null default(GETDATE()),
-CONSTRAINT [PK_CustomerTickets] PRIMARY KEY CLUSTERED ([TicketId]),
-CONSTRAINT [UK1_CustomerTickets] UNIQUE ([TicketId], [CustomerId]));
--- Constraints to prevent the same ticket being sold twice and that each coupling of customer/ticket is unique
-
-BEGIN
-INSERT INTO [CustomerTickets]
-(CustomerId, TicketId, SoldDate)
-SELECT CustomerId, TicketId, SoldDate
-FROM #custTicketTmp;
-END
-
-DROP TABLE #custTicketTmp;
-END
-ELSE
-BEGIN
-CREATE TABLE [CustomerTickets] (
-[CustomerId] int not null,
-[TicketId] int not null,
-[SoldDate] datetime not null default(GETDATE()),
-CONSTRAINT [PK_CustomerTickets] PRIMARY KEY CLUSTERED ([TicketId]),
-CONSTRAINT [UK1_CustomerTickets] UNIQUE ([TicketId], [CustomerId]));
-END
-
 -- Setup of Artists table
 IF EXISTS (
 SELECT 1 FROM sys.tables WHERE name = 'Artists')
@@ -372,23 +338,17 @@ FOREIGN KEY ([VenueId])
 REFERENCES [Venues] ([VenueId]);
 -- A concert needs a valid venue
 
-ALTER TABLE [CustomerTickets]
-ADD CONSTRAINT [FK1_CustomerTickets]
-FOREIGN KEY ([CustomerId])
-REFERENCES [Customers] ([CustomerId]);
--- A ticket has to be sold to an actual customer
-
-ALTER TABLE [CustomerTickets]
-ADD CONSTRAINT [FK2_CustomerTickets]
-FOREIGN KEY ([TicketId])
-REFERENCES [Tickets] ([TicketId]);
--- A customer has to have a valid ticket
-
 ALTER TABLE [Tickets]
 ADD CONSTRAINT [FK1_Tickets]
 FOREIGN KEY ([ConcertId])
 REFERENCES [Concerts] ([ConcertId]);
 -- A ticket needs to be sold to an actual concert
+
+ALTER TABLE [Tickets]
+ADD CONSTRAINT [FK2_Tickets]
+FOREIGN KEY ([CustomerId])
+REFERENCES [Customers] ([CustomerId]);
+
 
 ALTER TABLE [Coupons]
 ADD CONSTRAINT [FK1_Coupons]

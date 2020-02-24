@@ -207,10 +207,9 @@ namespace TicketSystemAPI.Controllers
                 try
                 {
                     conn.Open();
-                    string sql = @"SELECT cust.LoginName, a.ArtistName, v.VenueName, c.CalendarDate, ct.SoldDate, c.Cancelled, ct.TicketId
+                    string sql = @"SELECT cust.LoginName, a.ArtistName, v.VenueName, c.CalendarDate, t.SoldDate, c.Cancelled, t.TicketId
                                     FROM Customers cust
-                                    INNER JOIN CustomerTickets ct ON ct.CustomerId = cust.CustomerId
-                                    INNER JOIN Tickets t ON ct.TicketId = t.TicketId
+                                    INNER JOIN Tickets t ON cust.CustomerId = t.CustomerId
                                     INNER JOIN Concerts c ON t.ConcertId = c.ConcertId
                                     INNER JOIN Artists a ON c.ArtistId = a.ArtistId
                                     INNER JOIN Venues v ON c.VenueId = v.VenueId
