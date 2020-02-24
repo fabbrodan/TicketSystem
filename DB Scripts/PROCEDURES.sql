@@ -1,3 +1,11 @@
+IF EXISTS (
+SELECT 1 FROM sys.procedures
+WHERE name = 'SP_Purchase')
+BEGIN
+DROP PROCEDURE [SP_Purchase];
+END
+GO
+
 CREATE PROCEDURE [SP_Purchase] (@concertId int, @customerId int)
 AS
 BEGIN
@@ -5,15 +13,18 @@ BEGIN
 BEGIN TRAN
 BEGIN TRY
 
-UPDATE Customers SET Currency = Currency - (
-SELECT Price FROM Concerts WHERE ConcertId = @concertId)
-WHERE CustomerId = @customerId;
+UPDATE c
+SET c.Currency -= con.Price
+FROM Customers c,
+Concerts con
+WHERE CustomerId = @customerId
+AND con.ConcertId = @concertId;
 
 INSERT INTO Tickets (ConcertId) VALUES(@concertId);
 
 INSERT INTO CustomerTickets
 (CustomerId, TicketId)
-VALUES(@customerId, (SELECT MAX(TicketId) FROM Tickets));
+VALUES(@customerId, (SELECT SCOPE_IDENTITY()));
 
 UPDATE Concerts
 SET TicketsLeft = TicketsLeft - 1
@@ -26,6 +37,15 @@ ROLLBACK TRAN
 END CATCH
 IF @@TRANCOUNT > 0
 COMMIT TRAN
+END
+GO
+
+IF EXISTS (
+SELECT 1
+FROM sys.procedures
+WHERE name = 'SP_CancelConcert')
+BEGIN
+DROP PROCEDURE [SP_CancelConcert];
 END
 GO
 

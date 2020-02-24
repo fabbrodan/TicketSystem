@@ -8,7 +8,7 @@ var periodSale = { theCount: "", Revenue: "" };
 var periodSaleDates = { startDate: "", endDate: "" };
 var topTen = [{ sumPrice: "", ArtistName: "" }];
 var topTenDates = { startDate: "", endDate: "" };
-var couponStats = { theCount: "", sumValue: "", ConcertDate: "", ArtistName: "", VenueName: "", ExpirationDate: "" };
+var couponStats = [{ theCount: "", sumValue: "", ConcertDate: "", ArtistName: "", VenueName: "", ExpirationDate: "" }];
 
 router.get('/login', function (req, res) {
     res.render('admin/login');

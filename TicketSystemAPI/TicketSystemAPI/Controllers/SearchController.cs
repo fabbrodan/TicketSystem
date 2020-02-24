@@ -41,9 +41,9 @@ namespace TicketSystemAPI.Controllers
             var searchResponse = _client.Search<IndexObject>(s => s
             .Query(q => q
             .QueryString(qs => qs
-            .Fields(f => f.Field(a => a.ArtistName)
-                .Field(v => v.VenueName)
-                .Field(c => c.City)
+            .Fields(f => f.Field(a => a.ArtistName, 3.0)
+                .Field(v => v.VenueName, 2.0)
+                .Field(c => c.City, 1.5)
                 .Field(d => d.ConcertDate.ToShortDateString()))
             //.AllowLeadingWildcard()
             .Fuzziness(Fuzziness.EditDistance(3))

@@ -336,7 +336,7 @@ CREATE TABLE [Artists] (
 [ArtistId] int not null identity(1,1),
 [ArtistName] nvarchar(255) not null,
 CONSTRAINT [PK_Artists] PRIMARY KEY CLUSTERED ([ArtistId]),
-CONSTRAINT [UK1_Artists] UNIQUE([ArtistName]);
+CONSTRAINT [UK1_Artists] UNIQUE([ArtistName]));
 -- ArtistId is a good PK, but not name since, well nvarchar, but name should still be unique
 
 BEGIN
