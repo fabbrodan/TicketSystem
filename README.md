@@ -9,3 +9,5 @@ This url is located in appsettings.json
 
 By default the app is looking at 127.0.0.10 as the API source URL.
 Future patches will change this from code to an application setting/configuration.
+
+test discord
